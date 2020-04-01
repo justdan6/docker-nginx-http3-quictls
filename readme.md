@@ -9,3 +9,11 @@ docker pull macbre/nginx-brotli:1.17.9
 ```
 
 > [nginx release notes](https://nginx.org/en/CHANGES)
+
+# SSL Grade A+ handling
+
+Please refer to [Mozilla's SSL Configuration Generator](https://ssl-config.mozilla.org/). This image has `https://ssl-config.mozilla.org/ffdhe2048.txt` fetched and stored in `/etc/ssl/ffdhe4096.pem`:
+
+```
+    ssl_dhparam /etc/ssl/ffdhe4096.pem;
+```
