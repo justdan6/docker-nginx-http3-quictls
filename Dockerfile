@@ -2,7 +2,7 @@ FROM alpine:3.11
 
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
-ENV NGINX_VERSION 1.17.9
+ENV NGINX_VERSION 1.17.10
 ENV NGX_BROTLI_COMMIT e505dce68acc190cc5a1e780a3b0275e39f160ca 
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
@@ -151,6 +151,7 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+COPY ssl_common.conf /etc/nginx/conf.d/ssl_common.conf
 
 EXPOSE 80 443
 
