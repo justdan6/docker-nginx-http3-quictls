@@ -40,7 +40,6 @@ RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
 		--with-http_xslt_module=dynamic \
 		--with-http_image_filter_module=dynamic \
 		--with-http_geoip_module=dynamic \
-		--with-http_perl_module=dynamic \
 		--with-threads \
 		--with-stream \
 		--with-stream_ssl_module \
@@ -78,7 +77,6 @@ RUN \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
-		perl-dev \
 	&& apk add --no-cache --virtual .brotli-build-deps \
 		autoconf \
 		libtool \
@@ -113,7 +111,6 @@ RUN \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
 	&& mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
-	&& mv objs/ngx_http_perl_module.so objs/ngx_http_perl_module-debug.so \
 	&& mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so \
 	&& ./configure $CONFIG \
 	&& make -j$(getconf _NPROCESSORS_ONLN)
@@ -130,7 +127,6 @@ RUN \
 	&& install -m755 objs/ngx_http_xslt_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_xslt_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
 	&& install -m755 objs/ngx_http_geoip_module-debug.so /usr/lib/nginx/modules/ngx_http_geoip_module-debug.so \
-	&& install -m755 objs/ngx_http_perl_module-debug.so /usr/lib/nginx/modules/ngx_http_perl_module-debug.so \
 	&& install -m755 objs/ngx_stream_geoip_module-debug.so /usr/lib/nginx/modules/ngx_stream_geoip_module-debug.so \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
@@ -159,7 +155,6 @@ COPY --from=0 /etc/nginx /etc/nginx
 COPY --from=0 /usr/lib/nginx/modules/*.so /usr/lib/nginx/modules/
 COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx-debug /usr/sbin/
 COPY --from=0 /usr/share/nginx/html/* /usr/share/nginx/html/
-COPY --from=0 /usr/local/lib/perl5/site_perl /usr/local/lib/perl5/site_perl
 COPY --from=0 /usr/bin/envsubst /usr/local/bin/envsubst
 
 RUN \
