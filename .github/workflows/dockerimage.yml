@@ -23,7 +23,7 @@ jobs:
 
     - name: Serve a static asset
       run: |
-        docker run --detach --rm -p 0.0.0.0:8888:80 -v "./tests":/static:ro  -v "./tests/static.conf":/etc/nginx/conf.d/static.conf:ro --tag nginx ${{ github.repository }}
+        docker run --rm -p 0.0.0.0:8888:80 -v "$PWD/tests":/static:ro  -v "$PWD/tests/static.conf":/etc/nginx/conf.d/static.conf:ro --name test_nginx -t ${{ github.repository }}
         sleep 2; docker ps
         curl -v --compressed 0.0.0.0:8888
-        docker logs nginx
+        docker logs test_nginx
