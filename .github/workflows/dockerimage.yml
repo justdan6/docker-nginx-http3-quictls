@@ -16,7 +16,9 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Build the Docker image
-      run: docker build . --tag ${{ github.repository }}
+      run: |
+        docker build . --tag ${{ github.repository }}
+        docker images
 
     - name: Run nginx -V
       run: docker run -t ${{ github.repository }} nginx -V
