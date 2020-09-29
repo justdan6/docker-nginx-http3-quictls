@@ -1,14 +1,10 @@
 FROM alpine:3.12
 
-LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
-
-ENV NGINX_VERSION 1.19.2
+ARG NGINX_VERSION=1.19.2
 
 # https://github.com/google/ngx_brotli
-ENV NGX_BROTLI_COMMIT 25f86f0bac1101b6512135eac5f93c49c63609e3
-
-RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
-	&& CONFIG="\
+ARG NGX_BROTLI_COMMIT=25f86f0bac1101b6512135eac5f93c49c63609e3
+ARG CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
 		--modules-path=/usr/lib/nginx/modules \
