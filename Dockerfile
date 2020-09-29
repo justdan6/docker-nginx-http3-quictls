@@ -1,5 +1,3 @@
-FROM alpine:3.12
-
 ARG NGINX_VERSION=1.19.2
 
 # https://github.com/google/ngx_brotli
