@@ -83,7 +83,8 @@ RUN \
 COPY nginx.pub /tmp/nginx.pub
 
 RUN \
-	mkdir -p /usr/src/ngx_brotli \
+	echo "Compiling nginx $NGINX_VERSION with brotli $NGX_BROTLI_COMMIT" \
+	&& mkdir -p /usr/src/ngx_brotli \
 	&& cd /usr/src/ngx_brotli \
 	&& git init \
 	&& git remote add origin https://github.com/google/ngx_brotli.git \
