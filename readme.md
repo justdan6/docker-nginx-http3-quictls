@@ -28,3 +28,8 @@ Please refer to [Mozilla's SSL Configuration Generator](https://ssl-config.mozil
 ```
     ssl_dhparam /etc/ssl/dhparam.pem;
 ```
+
+# nginx config files includes
+
+* `.conf` files mounted in `/etc/nginx/main.d/` will be included in the `main` nginx context (e.g. you can call [`env` directive](http://nginx.org/en/docs/ngx_core_module.html#env) there)
+* `.conf` files mounted in `/etc/nginx/conf.d/` will be included in the `htto` nginx context
