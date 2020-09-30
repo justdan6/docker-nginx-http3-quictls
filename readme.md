@@ -1,14 +1,14 @@
-# What is this?
+## What is this?
 This project is based on Alpine Linux, the official nginx image and an nginx module that provides static and dynamic brotli compression. [Brotli](https://github.com/google/brotli) and the [nginx brotli module ](https://github.com/google/ngx_brotli) are built by Google.
 
-# How to use this image
+## How to use this image
 As this project is based on the official [nginx image](https://hub.docker.com/_/nginx/) look for instructions there. In addition to the standard configuration directives, you'll be able to use the brotli module specific ones, see [here for official documentation](https://github.com/google/ngx_brotli#configuration-directives)
 
 ```
 docker pull macbre/nginx-brotli:1.19.2
 ```
 
-# What's inside
+## What's inside
 
 ```
 $ docker run -it macbre/nginx-brotli nginx -V
@@ -21,7 +21,7 @@ configure arguments: --prefix=/etc/nginx --sbin-path=/usr/sbin/nginx --modules-p
 
 > [nginx release notes](https://nginx.org/en/CHANGES)
 
-# SSL Grade A+ handling
+## SSL Grade A+ handling
 
 Please refer to [Mozilla's SSL Configuration Generator](https://ssl-config.mozilla.org/). This image has `https://ssl-config.mozilla.org/ffdhe2048.txt` DH parameters for DHE ciphers fetched and stored in `/etc/ssl/dhparam.pem`:
 
@@ -29,7 +29,7 @@ Please refer to [Mozilla's SSL Configuration Generator](https://ssl-config.mozil
     ssl_dhparam /etc/ssl/dhparam.pem;
 ```
 
-# nginx config files includes
+## nginx config files includes
 
-* `.conf` files mounted in `/etc/nginx/main.d/` will be included in the `main` nginx context (e.g. you can call [`env` directive](http://nginx.org/en/docs/ngx_core_module.html#env) there)
-* `.conf` files mounted in `/etc/nginx/conf.d/` will be included in the `htto` nginx context
+* `.conf` files mounted in `/etc/nginx/main.d` will be included in the `main` nginx context (e.g. you can call [`env` directive](http://nginx.org/en/docs/ngx_core_module.html#env) there)
+* `.conf` files mounted in `/etc/nginx/conf.d` will be included in the `http` nginx context
