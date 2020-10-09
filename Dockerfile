@@ -1,9 +1,15 @@
-FROM alpine:3.12
-
-ARG NGINX_VERSION=1.19.2
+ARG NGINX_VERSION=1.19.3
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=25f86f0bac1101b6512135eac5f93c49c63609e3
+
+# https://github.com/vision5/ngx_devel_kit/releases
+# https://hub.docker.com/r/firesh/nginx-lua/dockerfile
+ARG NGX_DEVEL_KIT_VERSION=0.3.1
+
+# https://github.com/openresty/luajit2/releases
+ARG LUA_NGINX_MODULE_VERSION=0.10.14
+
 ARG CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -49,6 +55,9 @@ ARG CONFIG="\
 		--with-file-aio \
 		--with-http_v2_module \
 		--add-module=/usr/src/ngx_brotli \
+		--with-ld-opt="-Wl,-rpath,/usr/lib" \
+		--add-module=/tmp/ngx_devel_kit-${NGX_DEVEL_KIT_VERSION} \
+		--add-module=/tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
 	"
 
 FROM alpine:3.12
@@ -57,6 +66,8 @@ LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 ARG NGINX_VERSION
 ARG NGX_BROTLI_COMMIT
 ARG CONFIG
+ARG NGX_DEVEL_KIT_VERSION
+ARG LUA_NGINX_MODULE_VERSION
 
 RUN \
 	apk add --no-cache --virtual .build-deps \
@@ -72,6 +83,8 @@ RUN \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
+		luajit \
+		luajit-dev \
 	&& apk add --no-cache --virtual .brotli-build-deps \
 		autoconf \
 		libtool \
@@ -83,8 +96,14 @@ RUN \
 COPY nginx.pub /tmp/nginx.pub
 
 RUN \
-	echo "Compiling nginx $NGINX_VERSION with brotli $NGX_BROTLI_COMMIT" \
-	&& mkdir -p /usr/src/ngx_brotli \
+	echo "Fetcing lua-nginx-module $LUA_NGINX_MODULE_VERSION and nginx devel kit $NGX_DEVEL_KIT_VERSION ..." \
+	&& curl -fSL https://github.com/simpl/ngx_devel_kit/archive/v${NGX_DEVEL_KIT_VERSION}.tar.gz -o /tmp/ndk.tar.gz \
+	&& tar -xvf /tmp/ndk.tar.gz -C /tmp \
+	&& curl -fSL https://github.com/openresty/lua-nginx-module/archive/v${LUA_NGINX_MODULE_VERSION}.tar.gz -o /tmp/lua-nginx.tar.gz \
+	&& tar -xvf /tmp/lua-nginx.tar.gz -C /tmp
+
+RUN \
+	mkdir -p /usr/src/ngx_brotli \
 	&& cd /usr/src/ngx_brotli \
 	&& git init \
 	&& git remote add origin https://github.com/google/ngx_brotli.git \
@@ -102,7 +121,10 @@ RUN \
 	&& tar -zxC /usr/src -f nginx.tar.gz
 
 RUN \
-	cd /usr/src/nginx-$NGINX_VERSION \
+	export LUAJIT_LIB=/usr/lib \
+	&& export LUAJIT_INC=/usr/include/luajit-2.1 \
+	&& echo "Compiling nginx $NGINX_VERSION with brotli $NGX_BROTLI_COMMIT and lua nginx module v$LUA_NGINX_MODULE_VERSION ..." \
+	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --with-debug \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
@@ -147,6 +169,8 @@ RUN \
 
 FROM alpine:3.12
 ARG NGINX_VERSION
+ARG NGX_BROTLI_COMMIT
+ARG LUA_NGINX_MODULE_VERSION
 
 COPY --from=0 /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=0 /etc/nginx /etc/nginx
@@ -170,6 +194,10 @@ RUN \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY ssl_common.conf /etc/nginx/conf.d/ssl_common.conf
+
+ENV NGINX_VERSION $NGINX_VERSION
+ENV NGX_BROTLI_COMMIT $NGX_BROTLI_COMMIT
+ENV LUA_NGINX_MODULE_VERSION $LUA_NGINX_MODULE_VERSION
 
 EXPOSE 80 443
 
