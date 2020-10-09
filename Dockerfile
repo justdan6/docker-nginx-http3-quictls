@@ -178,6 +178,7 @@ COPY --from=0 /usr/lib/nginx/modules/*.so /usr/lib/nginx/modules/
 COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx-debug /usr/sbin/
 COPY --from=0 /usr/share/nginx/html/* /usr/share/nginx/html/
 COPY --from=0 /usr/bin/envsubst /usr/local/bin/envsubst
+COPY --from=0 /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
 
 RUN \
 	addgroup -S nginx \
