@@ -1,7 +1,7 @@
 ARG NGINX_VERSION=1.19.6
 
 # https://github.com/google/ngx_brotli
-ARG NGX_BROTLI_COMMIT=25f86f0bac1101b6512135eac5f93c49c63609e3
+ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 
 # https://github.com/vision5/ngx_devel_kit/releases
 # https://hub.docker.com/r/firesh/nginx-lua/dockerfile
