@@ -1,4 +1,4 @@
-ARG NGINX_VERSION=1.19.4
+ARG NGINX_VERSION=1.19.6
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=25f86f0bac1101b6512135eac5f93c49c63609e3
