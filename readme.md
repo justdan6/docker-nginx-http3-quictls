@@ -5,14 +5,14 @@ This project is based on Alpine Linux, the official nginx image and an nginx mod
 As this project is based on the official [nginx image](https://hub.docker.com/_/nginx/) look for instructions there. In addition to the standard configuration directives, you'll be able to use the brotli module specific ones, see [here for official documentation](https://github.com/google/ngx_brotli#configuration-directives)
 
 ```
-docker pull macbre/nginx-brotli:1.19.5
+docker pull macbre/nginx-brotli:1.19.6
 ```
 
 ## What's inside
 
 ```
 $ docker run -it macbre/nginx-brotli nginx -V
-nginx version: nginx/1.19.5
+nginx version: nginx/1.19.6
 built by gcc 9.3.0 (Alpine 9.3.0) 
 built with OpenSSL 1.1.1i  8 Dec 2020
 TLS SNI support enabled
