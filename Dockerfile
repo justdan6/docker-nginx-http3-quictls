@@ -60,7 +60,7 @@ ARG CONFIG="\
 		--add-module=/tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
 	"
 
-FROM alpine:3.12
+FROM alpine:3.12 AS base
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
 ARG NGINX_VERSION
@@ -172,13 +172,13 @@ ARG NGINX_VERSION
 ARG NGX_BROTLI_COMMIT
 ARG LUA_NGINX_MODULE_VERSION
 
-COPY --from=0 /tmp/runDeps.txt /tmp/runDeps.txt
-COPY --from=0 /etc/nginx /etc/nginx
-COPY --from=0 /usr/lib/nginx/modules/*.so /usr/lib/nginx/modules/
-COPY --from=0 /usr/sbin/nginx /usr/sbin/nginx-debug /usr/sbin/
-COPY --from=0 /usr/share/nginx/html/* /usr/share/nginx/html/
-COPY --from=0 /usr/bin/envsubst /usr/local/bin/envsubst
-COPY --from=0 /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
+COPY --from=base /tmp/runDeps.txt /tmp/runDeps.txt
+COPY --from=base /etc/nginx /etc/nginx
+COPY --from=base /usr/lib/nginx/modules/*.so /usr/lib/nginx/modules/
+COPY --from=base /usr/sbin/nginx /usr/sbin/nginx-debug /usr/sbin/
+COPY --from=base /usr/share/nginx/html/* /usr/share/nginx/html/
+COPY --from=base /usr/bin/envsubst /usr/local/bin/envsubst
+COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
 
 RUN \
 	addgroup -S nginx \
