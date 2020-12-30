@@ -9,22 +9,25 @@ on:
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
 
     - name: Build the Docker image
+      env:
+        CACHE_IMAGE: macbre/nginx-brotli:latest
+        DOCKER_BUILDKIT: 1
       run: |
         # use this image as a source of cache layers to speed up subsequent builds
-        docker pull macbre/nginx-brotli:latest
-        
+        # @see https://testdriven.io/blog/faster-ci-builds-with-docker-cache/
+        docker pull $CACHE_IMAGE
+
         # build an image using the current Docker Hub container image
         docker build . \
-          --tag ${{ github.repository }} \
+          --tag $CACHE_IMAGE \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
-          --cache-from macbre/nginx-brotli:latest
+          --cache-from $CACHE_IMAGE
         docker images
 
     - name: Run nginx -V
@@ -32,7 +35,7 @@ jobs:
 
     - name: Serve a static asset
       run: |
-        docker run --detach --rm -p 0.0.0.0:8888:80 -v "$PWD/tests":/static:ro  -v "$PWD/tests/static.conf":/etc/nginx/conf.d/static.conf:ro -v "$PWD/tests/env.conf":/etc/nginx/main.d/env.conf:ro --env FOO=foo-test-value --name test_nginx -t ${{ github.repository }}
+        docker run --detach --rm -p 0.0.0.0:8888:80 -v "$PWD/tests":/static:ro  -v "$PWD/tests/static.conf":/etc/nginx/conf.d/static.conf:ro -v "$PWD/tests/env.conf":/etc/nginx/main.d/env.conf:ro --env FOO=foo-test-value --name test_nginx -t $CACHE)IMAGE
         sleep 2; docker ps
         curl -v --compressed 0.0.0.0:8888 2>&1 | tee /tmp/out
 
