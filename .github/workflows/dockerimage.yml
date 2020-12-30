@@ -16,7 +16,7 @@ jobs:
 
     - name: Build the Docker image
       env:
-        CACHE_IMAGE: macbre/nginx-brotli:latest
+        CACHE_IMAGE: docker.io/macbre/nginx-brotli:latest
         DOCKER_BUILDKIT: 1
       run: |
         # use this image as a source of cache layers to speed up subsequent builds
