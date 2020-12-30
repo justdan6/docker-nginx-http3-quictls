@@ -16,8 +16,7 @@ jobs:
 
     - name: Build the Docker image
       env:
-        CACHE_IMAGE: docker.io/macbre/nginx-brotli:latest
-        DOCKER_BUILDKIT: 1
+        CACHE_IMAGE: macbre/nginx-brotli:latest
       run: |
         # use this image as a source of cache layers to speed up subsequent builds
         # @see https://testdriven.io/blog/faster-ci-builds-with-docker-cache/
@@ -25,8 +24,7 @@ jobs:
 
         # build an image using the current Docker Hub container image
         docker build . \
-          --tag $CACHE_IMAGE \
-          --build-arg BUILDKIT_INLINE_CACHE=1 \
+          --tag ${{ github.repository }} \
           --cache-from $CACHE_IMAGE
         docker images
 
@@ -42,7 +40,7 @@ jobs:
           -v "$PWD/tests/env.conf":/etc/nginx/main.d/env.conf:ro \
           --env FOO=foo-test-value \
           --name test_nginx \
-          -t $CACHE_IMAGE
+          -t ${{ github.repository }}
 
         sleep 2; docker ps
         curl -v --compressed 0.0.0.0:8888 2>&1 | tee /tmp/out
