@@ -17,7 +17,9 @@ jobs:
 
     - name: Build the Docker image
       run: |
-        docker build . --tag ${{ github.repository }}
+        docker build . \
+          --tag ${{ github.repository }} \
+          --cache-from macbre/nginx-brotli:latest
         docker images
 
     - name: Run nginx -V
