@@ -17,6 +17,10 @@ jobs:
 
     - name: Build the Docker image
       run: |
+        # use this image as a source of cache layers to speed up subsequent builds
+        docker pull macbre/nginx-brotli:latest
+        
+        # build an image using the current Docker Hub container image
         docker build . \
           --tag ${{ github.repository }} \
           --build-arg BUILDKIT_INLINE_CACHE=1 \
