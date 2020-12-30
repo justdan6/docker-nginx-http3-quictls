@@ -19,6 +19,7 @@ jobs:
       run: |
         docker build . \
           --tag ${{ github.repository }} \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
           --cache-from macbre/nginx-brotli:latest
         docker images
 
