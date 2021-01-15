@@ -17,6 +17,10 @@ jobs:
     - name: Build the Docker image
       env:
         CACHE_IMAGE: macbre/nginx-brotli:latest
+        
+        # @see https://docs.docker.com/develop/develop-images/build_enhancements/
+        COMPOSE_DOCKER_CLI_BUILD: "1"
+        DOCKER_BUILDKIT: "1"
       run: |
         # use this image as a source of cache layers to speed up subsequent builds
         # @see https://testdriven.io/blog/faster-ci-builds-with-docker-cache/
