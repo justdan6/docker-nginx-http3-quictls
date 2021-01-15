@@ -21,14 +21,15 @@ jobs:
         # @see https://docs.docker.com/develop/develop-images/build_enhancements/
         COMPOSE_DOCKER_CLI_BUILD: "1"
         DOCKER_BUILDKIT: "1"
-      run: |
-        # use this image as a source of cache layers to speed up subsequent builds
-        # @see https://testdriven.io/blog/faster-ci-builds-with-docker-cache/
-        docker pull $CACHE_IMAGE
 
-        # build an image using the current Docker Hub container image
+      run: |
+        # build an image using the current Docker Hub container image as a layers cache
+
+        # @see https://docs.docker.com/engine/reference/commandline/build/#specifying-external-cache-sources
+        # no need to "docker pull $CACHE_IMAGE", BuildKit is clever enough to pull it when needed
         docker build . \
           --tag ${{ github.repository }} \
+           --build-arg BUILDKIT_INLINE_CACHE=1 \
           --cache-from $CACHE_IMAGE
         docker images
 
