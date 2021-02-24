@@ -60,7 +60,7 @@ ARG CONFIG="\
 		--add-module=/tmp/lua-nginx-module-${LUA_NGINX_MODULE_VERSION} \
 	"
 
-FROM alpine:3.12 AS base
+FROM alpine:3.13 AS base
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
 ARG NGINX_VERSION
@@ -167,7 +167,7 @@ RUN \
 			| xargs -r apk info --installed \
 			| sort -u > /tmp/runDeps.txt
 
-FROM alpine:3.12
+FROM alpine:3.13
 ARG NGINX_VERSION
 ARG NGX_BROTLI_COMMIT
 ARG LUA_NGINX_MODULE_VERSION
