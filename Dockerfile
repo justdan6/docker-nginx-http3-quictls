@@ -122,7 +122,7 @@ RUN \
 
 RUN \
 	export LUAJIT_LIB=/usr/lib \
-	&& export LUAJIT_INC=/usr/include/luajit-2.1 \
+	&& export LUAJIT_INC=/usr/include/moonjit-2.2 \
 	&& echo "Compiling nginx $NGINX_VERSION with brotli $NGX_BROTLI_COMMIT and lua nginx module v$LUA_NGINX_MODULE_VERSION ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --with-debug \
