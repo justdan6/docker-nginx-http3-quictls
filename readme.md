@@ -7,14 +7,14 @@ Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [Google's `brot
 As this project is based on the official [nginx image](https://hub.docker.com/_/nginx/) look for instructions there. In addition to the standard configuration directives, you'll be able to use the brotli module specific ones, see [here for official documentation](https://github.com/google/ngx_brotli#configuration-directives)
 
 ```
-docker pull macbre/nginx-brotli:1.19.9
+docker pull macbre/nginx-brotli:1.19.10
 ```
 
 ## What's inside
 
 ```
 $ docker run -it macbre/nginx-brotli nginx -V
-nginx version: nginx/1.19.9
+nginx version: nginx/1.19.10
 built by gcc 10.2.1 20201203 (Alpine 10.2.1_pre1) 
 built with OpenSSL 1.1.1k  25 Mar 2021
 TLS SNI support enabled
