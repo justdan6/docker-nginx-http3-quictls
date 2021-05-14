@@ -1,6 +1,6 @@
 ## What is this?
 
-Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [Google's `brotli` compression](https://github.com/google/ngx_brotli), [Lua module](https://github.com/openresty/lua-nginx-module), and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
+Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [Google's `brotli` compression](https://github.com/google/ngx_brotli) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
 
 
 ## How to use this image
