@@ -47,6 +47,9 @@ ARG CONFIG="\
 		--with-compat \
 		--with-file-aio \
 		--with-http_v2_module \
+		--with-http_v3_module \
+		--with-openssl=/usr/src/quiche/deps/boringssl \
+		--with-quiche=/usr/src/quiche \
 		--add-module=/usr/src/ngx_brotli \
 	"
 
@@ -62,6 +65,7 @@ RUN \
 		gcc \
 		libc-dev \
 		make \
+		patch \
 		openssl-dev \
 		pcre-dev \
 		zlib-dev \
@@ -82,7 +86,7 @@ RUN \
 COPY nginx.pub /tmp/nginx.pub
 
 RUN \
-	echo "Compiling nginx $NGINX_VERSION with brotli $NGX_BROTLI_COMMIT" \
+	echo "Compiling nginx $NGINX_VERSION with brotli $NGX_BROTLI_COMMIT ..." \
 	&& mkdir -p /usr/src/ngx_brotli \
 	&& cd /usr/src/ngx_brotli \
 	&& git init \
@@ -98,11 +102,15 @@ RUN \
 	&& gpg --import /tmp/nginx.pub \
 	&& gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
 	&& mkdir -p /usr/src \
-	&& tar -zxC /usr/src -f nginx.tar.gz
+	&& tar -zxC /usr/src -f nginx.tar.gz \
+	&& echo "Fetching quiche ..." \
+	&& cd /usr/src \
+	&& git clone --recursive https://github.com/cloudflare/quiche
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
-	&& ./configure $CONFIG --with-debug \
+	&& patch -p01 < /usr/src/quiche/extras/nginx/nginx-1.16.patch \
+	&& ./configure $CONFIG --with-debug --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
