@@ -75,6 +75,7 @@ RUN \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
+		cargo \
 	&& apk add --no-cache --virtual .brotli-build-deps \
 		autoconf \
 		libtool \
