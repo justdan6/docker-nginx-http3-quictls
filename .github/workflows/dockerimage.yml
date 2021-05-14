@@ -42,8 +42,6 @@ jobs:
           -p 0.0.0.0:8888:80 \
           -v "$PWD/tests":/static:ro \
           -v "$PWD/tests/static.conf":/etc/nginx/conf.d/static.conf:ro \
-          -v "$PWD/tests/env.conf":/etc/nginx/main.d/env.conf:ro \
-          --env FOO=foo-test-value \
           --name test_nginx \
           -t ${{ github.repository }}
 
