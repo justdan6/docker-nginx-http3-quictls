@@ -119,7 +119,7 @@ RUN \
 	&& echo "Building nginx ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
-	&& make -j$(getconf _NPROCESSORS_ONLN)
+	&& make
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
