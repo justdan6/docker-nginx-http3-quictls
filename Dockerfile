@@ -1,4 +1,4 @@
-ARG NGINX_VERSION=1.19.10
+ARG NGINX_VERSION=1.19.2
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
@@ -119,7 +119,7 @@ RUN \
 	&& echo "Building nginx ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
-	&& make
+	&& make -j$(getconf _NPROCESSORS_ONLN)
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
