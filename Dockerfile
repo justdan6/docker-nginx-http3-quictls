@@ -75,7 +75,6 @@ RUN \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
-		cargo \
 	&& apk add --no-cache --virtual .brotli-build-deps \
 		autoconf \
 		libtool \
@@ -104,14 +103,21 @@ RUN \
 	&& gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
 	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
-	&& echo "Fetching quiche ..." \
+	&& echo "Fetching quiche and applying the patch..." \
 	&& cd /usr/src \
-	&& git clone --recursive https://github.com/cloudflare/quiche
+	&& git clone --recursive https://github.com/cloudflare/quiche \
+	&& cd /usr/src/nginx-$NGINX_VERSION \
+	&& patch -p01 < /usr/src/quiche/extras/nginx/nginx-1.16.patch
 
 RUN \
-	cd /usr/src/nginx-$NGINX_VERSION \
-	&& patch -p01 < /usr/src/quiche/extras/nginx/nginx-1.16.patch \
-	&& ./configure $CONFIG --with-debug --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
+	echo "Setting up rust ..." \
+	&& curl https://sh.rustup.rs -sSf | sh -s -- -y -q \
+        && export PATH="$HOME/.cargo/bin:$PATH"
+
+RUN \
+	echo "Building nginx ..." \
+	&& cd /usr/src/nginx-$NGINX_VERSION \
+	&& ./configure $CONFIG --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
 	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
