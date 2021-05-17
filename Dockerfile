@@ -152,7 +152,7 @@ ARG NGINX_VERSION
 COPY --from=base /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=base /etc/nginx /etc/nginx
 COPY --from=base /usr/lib/nginx/modules/*.so /usr/lib/nginx/modules/
-COPY --from=base /usr/sbin/nginx /usr/sbin/nginx-debug /usr/sbin/
+COPY --from=base /usr/sbin/nginx /usr/sbin/
 COPY --from=base /usr/share/nginx/html/* /usr/share/nginx/html/
 COPY --from=base /usr/bin/envsubst /usr/local/bin/envsubst
 COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
