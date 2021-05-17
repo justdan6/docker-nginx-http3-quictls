@@ -112,21 +112,19 @@ RUN \
 RUN \
 	echo "Setting up rust ..." \
 	&& curl https://sh.rustup.rs -sSf | sh -s -- -y -q \
-        && export PATH="$HOME/.cargo/bin:$PATH" \
-        && rustc --version \
-        && cargo --version
-
-RUN \
-	echo "Building nginx ..." \
+	&& export PATH="$HOME/.cargo/bin:$PATH" \
+	&& rustc --version \
+	&& cargo --version \
+\
+	&& echo "Building nginx ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
 	&& make -j$(getconf _NPROCESSORS_ONLN) \
-	&& mv objs/nginx objs/nginx-debug \
 	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
 	&& mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so \
 	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
 	&& mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so \
-	&& ./configure $CONFIG \
+	&& ./configure $CONFIG --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
 	&& make -j$(getconf _NPROCESSORS_ONLN)
 
 RUN \
