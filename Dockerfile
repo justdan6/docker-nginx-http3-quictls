@@ -84,10 +84,11 @@ RUN \
 		cmake
 
 COPY nginx.pub /tmp/nginx.pub
+WORKDIR /usr/src/
 
 RUN \
 	echo "Compiling nginx $NGINX_VERSION with brotli $NGX_BROTLI_COMMIT ..." \
-	&& mkdir -p /usr/src/ngx_brotli \
+	&& mkdir /usr/src/ngx_brotli \
 	&& cd /usr/src/ngx_brotli \
 	&& git init \
 	&& git remote add origin https://github.com/google/ngx_brotli.git \
@@ -101,7 +102,6 @@ RUN \
 	&& export GNUPGHOME="$(mktemp -d)" \
 	&& gpg --import /tmp/nginx.pub \
 	&& gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
-	&& mkdir -p /usr/src \
 	&& tar -zxC /usr/src -f nginx.tar.gz \
 	&& echo "Fetching quiche and applying the patch..." \
 	&& cd /usr/src \
@@ -112,7 +112,9 @@ RUN \
 RUN \
 	echo "Setting up rust ..." \
 	&& curl https://sh.rustup.rs -sSf | sh -s -- -y -q \
-        && export PATH="$HOME/.cargo/bin:$PATH"
+        && export PATH="$HOME/.cargo/bin:$PATH" \
+        && rustc --version \
+        && cargo --version
 
 RUN \
 	echo "Building nginx ..." \
