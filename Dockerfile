@@ -1,4 +1,4 @@
-ARG NGINX_VERSION=1.19.10
+ARG NGINX_VERSION=1.19.2
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
@@ -119,13 +119,7 @@ RUN \
 	&& echo "Building nginx ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./configure $CONFIG --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
-	&& make -j$(getconf _NPROCESSORS_ONLN) \
-	&& mv objs/ngx_http_xslt_filter_module.so objs/ngx_http_xslt_filter_module-debug.so \
-	&& mv objs/ngx_http_image_filter_module.so objs/ngx_http_image_filter_module-debug.so \
-	&& mv objs/ngx_http_geoip_module.so objs/ngx_http_geoip_module-debug.so \
-	&& mv objs/ngx_stream_geoip_module.so objs/ngx_stream_geoip_module-debug.so \
-	&& ./configure $CONFIG --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
-	&& make -j$(getconf _NPROCESSORS_ONLN)
+	&& make
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
@@ -135,13 +129,6 @@ RUN \
 	&& mkdir -p /usr/share/nginx/html/ \
 	&& install -m644 html/index.html /usr/share/nginx/html/ \
 	&& install -m644 html/50x.html /usr/share/nginx/html/ \
-	&& install -m755 objs/nginx-debug /usr/sbin/nginx-debug \
-	&& install -m755 objs/ngx_http_xslt_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_xslt_filter_module-debug.so \
-	&& install -m755 objs/ngx_http_image_filter_module-debug.so /usr/lib/nginx/modules/ngx_http_image_filter_module-debug.so \
-	&& install -m755 objs/ngx_http_geoip_module-debug.so /usr/lib/nginx/modules/ngx_http_geoip_module-debug.so \
-	&& install -m755 objs/ngx_stream_geoip_module-debug.so /usr/lib/nginx/modules/ngx_stream_geoip_module-debug.so \
-	&& strip /usr/sbin/nginx* \
-	&& strip /usr/lib/nginx/modules/*.so \
 	\
 	# https://tools.ietf.org/html/rfc7919
 	# https://github.com/mozilla/ssl-config-generator/blob/master/docs/ffdhe2048.txt
