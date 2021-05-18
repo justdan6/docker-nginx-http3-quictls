@@ -38,7 +38,7 @@ jobs:
 
     - name: Serve a static asset
       run: |
-        ./run-docker.sh
+        ./run-docker.sh &
 
         sleep 2; docker ps
         curl -v --compressed 0.0.0.0:8888 2>&1 | tee /tmp/out
