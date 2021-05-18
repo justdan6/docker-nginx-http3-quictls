@@ -1,7 +1,8 @@
 #!/bin/sh
 docker run --rm \
   -p 0.0.0.0:8888:80 \
-  -p 0.0.0.0:8889:443 \
+  -p 0.0.0.0:8889:443/tcp \
+  -p 0.0.0.0:8889:443/udp \
   -v "$PWD/tests":/static:ro \
   -v "$PWD/tests/static.conf":/etc/nginx/conf.d/static.conf:ro \
   -v "$PWD/tests/https.conf":/etc/nginx/conf.d/https.conf:ro \
