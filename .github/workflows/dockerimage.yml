@@ -28,22 +28,17 @@ jobs:
         # @see https://docs.docker.com/engine/reference/commandline/build/#specifying-external-cache-sources
         # no need to "docker pull $CACHE_IMAGE", BuildKit is clever enough to pull it when needed
         docker build . \
-          --tag ${{ github.repository }} \
+          --tag macbre/nginx \
            --build-arg BUILDKIT_INLINE_CACHE=1 \
           --cache-from $CACHE_IMAGE
         docker images
 
     - name: Run nginx -V
-      run: docker run -t ${{ github.repository }} nginx -V
+      run: docker run -t macbre/nginx nginx -V
 
     - name: Serve a static asset
       run: |
-        docker run --detach --rm \
-          -p 0.0.0.0:8888:80 \
-          -v "$PWD/tests":/static:ro \
-          -v "$PWD/tests/static.conf":/etc/nginx/conf.d/static.conf:ro \
-          --name test_nginx \
-          -t ${{ github.repository }}
+        ./run-docker.sh &
 
         sleep 2; docker ps
         curl -v --compressed 0.0.0.0:8888 2>&1 | tee /tmp/out
@@ -51,5 +46,13 @@ jobs:
         grep --fixed-strings '< Server: nginx' /tmp/out
         grep --fixed-strings '< Content-Encoding: br' /tmp/out
         grep --fixed-strings '<p>It works!</p>' /tmp/out
+
+
+        curl -v --compressed --insecure https://0.0.0.0:8889 2>&1 | tee /tmp/h2
+
+        grep --fixed-strings '< HTTP/2 200' /tmp/h2
+        grep --fixed-strings '< server: nginx' /tmp/h2
+        grep --fixed-strings '<p>It works!</p>' /tmp/h2
+
 
         docker logs test_nginx
