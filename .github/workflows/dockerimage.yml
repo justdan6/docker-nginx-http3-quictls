@@ -4,7 +4,6 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
 
 jobs:
 
@@ -54,5 +53,13 @@ jobs:
         grep --fixed-strings '< server: nginx' /tmp/h2
         grep --fixed-strings '<p>It works!</p>' /tmp/h2
 
+
+        docker run --rm --network host ymuski/curl-http3 \
+          curl -v --insecure https://localhost:8889 --http3 2>&1 | tee /tmp/h3
+
+        grep --fixed-strings '< HTTP/3 200' /tmp/h3
+        grep --fixed-strings '< server: nginx' /tmp/h3
+        grep --fixed-strings '< alt-svc: h3-27=":8889"; ma=86400, h3-28=":8889"; ma=86400, h3-29=":8889"; ma=86400' /tmp/h3
+        grep --fixed-strings '<p>It works!</p>' /tmp/h3
 
         docker logs test_nginx
