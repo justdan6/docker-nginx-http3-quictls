@@ -68,3 +68,5 @@ server {
     }
 }
 ```
+
+Refer to `run-docker.sh` script on how to run this container and properly mount required config files and assets.
