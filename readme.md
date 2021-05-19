@@ -1,14 +1,16 @@
 ## What is this?
 
-Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [Google's `brotli` compression](https://github.com/google/ngx_brotli) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
+Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [QUIC + HTTP/3 support](https://developers.cloudflare.com/http3/), [Google's `brotli` compression](https://github.com/google/ngx_brotli) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
 
 
 ## How to use this image
 As this project is based on the official [nginx image](https://hub.docker.com/_/nginx/) look for instructions there. In addition to the standard configuration directives, you'll be able to use the brotli module specific ones, see [here for official documentation](https://github.com/google/ngx_brotli#configuration-directives)
 
 ```
-docker pull macbre/nginx-brotli:1.19.10
+docker pull macbre/nginx-brotli:1.19.6-http3
 ```
+
+Please refer to [the list of image tags](https://hub.docker.com/_/nginx/) as there more recent nginx versions there (but without http3 support).
 
 ## What's inside
 
@@ -33,3 +35,36 @@ Please refer to [Mozilla's SSL Configuration Generator](https://ssl-config.mozil
 
 * `.conf` files mounted in `/etc/nginx/main.d` will be included in the `main` nginx context (e.g. you can call [`env` directive](http://nginx.org/en/docs/ngx_core_module.html#env) there)
 * `.conf` files mounted in `/etc/nginx/conf.d` will be included in the `http` nginx context
+
+## QUIC + HTTP/3 support
+
+Please refer to `tests/https.conf` config file for an example config used by the tests.
+
+```
+server {
+    # quic and http/3
+    listen 443 quic reuseport;
+
+    # http/2
+    listen 443 ssl http2;
+
+    server_name localhost;  # customize to match your domain
+
+    # you need to mount these files when running this container
+    ssl_certificate     /etc/nginx/ssl/localhost.crt;
+    ssl_certificate_key /etc/nginx/ssl/localhost.key;
+
+    # Enable all TLS versions (TLSv1.3 is required for QUIC).
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+
+    # 0-RTT QUIC connection resumption
+    ssl_early_data on;
+
+    # Add Alt-Svc header to negotiate HTTP/3.
+    add_header alt-svc 'h3=":443"; ma=86400';
+
+    location / {
+        # your config
+    }
+}
+```
