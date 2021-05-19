@@ -59,7 +59,7 @@ jobs:
 
         grep --fixed-strings '< HTTP/3 200' /tmp/h3
         grep --fixed-strings '< server: nginx' /tmp/h3
-        grep --fixed-strings '< alt-svc: h3=":8889"; ma=86400' /tmp/h3
+        grep --fixed-strings '< alt-svc: h3-27=":8889"; ma=86400, h3-28=":8889"; ma=86400, h3-29=":8889"; ma=86400' /tmp/h3
         grep --fixed-strings '<p>It works!</p>' /tmp/h3
 
         docker logs test_nginx
