@@ -38,7 +38,9 @@ Please refer to [Mozilla's SSL Configuration Generator](https://ssl-config.mozil
 
 ## QUIC + HTTP/3 support
 
-Please refer to `tests/https.conf` config file for an example config used by the tests.
+<img width="577" alt="Screenshot 2021-05-19 at 16 31 10" src="https://user-images.githubusercontent.com/1929317/118840921-baf7d300-b8bf-11eb-8c0f-e57d573a28ce.png">
+
+Please refer to `tests/https.conf` config file for an example config used by the tests. And to Cloudflare docs on [how to enable http/3 support in your browser](https://developers.cloudflare.com/http3/firefox).
 
 ```
 server {
