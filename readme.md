@@ -12,6 +12,12 @@ docker pull macbre/nginx-brotli:1.19.6-http3
 
 Please refer to [the list of image tags](https://hub.docker.com/_/nginx/) as there more recent nginx versions there (but without http3 support).
 
+You can fetch an image from [Github Containers Registry](https://github.com/macbre/docker-nginx-brotli/pkgs/container/nginx-brotli) as well:
+
+```
+docker pull ghcr.io/macbre/nginx-brotli:latest
+```
+
 ## What's inside
 
 ```
