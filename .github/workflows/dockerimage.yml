@@ -33,7 +33,7 @@ jobs:
         docker images
 
     - name: Run nginx -V
-      run: docker run -t macbre/nginx nginx -V
+      run: docker run -t macbre/nginx nginx -V | sed 's/\-\-/\n\t--/g' | tee
 
     - name: Serve a static asset
       run: |
