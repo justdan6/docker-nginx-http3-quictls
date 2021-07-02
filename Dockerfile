@@ -54,7 +54,6 @@ ARG CONFIG="\
 		--with-file-aio \
 		--with-http_v2_module \
 		--with-http_v3_module \
-		--with-openssl=/usr/src/boringssl \
 		--add-module=/usr/src/ngx_brotli \
 	"
 
@@ -70,6 +69,10 @@ RUN \
 		gcc \
 		libc-dev \
 		make \
+		musl-dev \
+		go \
+		ninja \
+		mercurial \
 		openssl-dev \
 		pcre-dev \
 		zlib-dev \
@@ -85,7 +88,6 @@ RUN \
 		libtool \
 		automake \
 		git \
-		mercurial \
 		g++ \
 		cmake
 
@@ -115,7 +117,6 @@ RUN \
 
 RUN \
   echo "Building boringssl ..." \
-  && apk add musl-dev go ninja \
   && cd /usr/src/boringssl \
   && mkdir build \
   && cd build \
