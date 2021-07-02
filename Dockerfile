@@ -114,11 +114,20 @@ RUN \
   && git checkout $BORINGSSL_COMMIT
 
 RUN \
+  echo "Building boringssl ..." \
+  && apk add musl-dev go \
+  && cd /usr/src/boringssl \
+  && mkdir build \
+  && cd build \
+  && cmake .. \
+  && make
+
+RUN \
   echo "Building nginx ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
-	&& ./auto/configure $CONFIG \
-    --with-cc-opt="-I../include/boringssl" \
-    --with-ld-opt="-L../boringssl/build/ssl -L../boringssl/build/crypto" \
+	&& ./auto/configure $CONFIG --with-openssl=/usr/src/boringssl \
+    --with-cc-opt="-I/usr/include/openssl" \
+    --with-ld-opt="-L/usr/src/boringssl/build/ssl -L/usr/src/boringssl/build/crypto" \
 	&& make -j$(getconf _NPROCESSORS_ONLN)
 
 RUN \
