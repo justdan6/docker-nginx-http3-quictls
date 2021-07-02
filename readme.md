@@ -22,7 +22,7 @@ docker pull ghcr.io/macbre/nginx-brotli:latest
 
 ```
 $ docker run -it macbre/nginx-brotli nginx -V
-nginx version: nginx/1.19.6 (quiche-4aafa65)
+nginx version: nginx/1.19.6 (quiche-5afe288)
 built by gcc 10.2.1 20201203 (Alpine 10.2.1_pre1) 
 built with OpenSSL 1.1.1 (compatible; BoringSSL) (running with BoringSSL)
 TLS SNI support enabled
@@ -58,6 +58,7 @@ configure arguments:
 	--with-http_xslt_module=dynamic 
 	--with-http_image_filter_module=dynamic 
 	--with-http_geoip_module=dynamic 
+	--with-http_perl_module=dynamic 
 	--with-threads 
 	--with-stream 
 	--with-stream_ssl_module 
@@ -74,7 +75,7 @@ configure arguments:
 	--with-openssl=/usr/src/quiche/deps/boringssl 
 	--with-quiche=/usr/src/quiche 
 	--add-module=/usr/src/ngx_brotli 
-	--build=quiche-4aafa65
+	--build=quiche-5afe288
 ```
 
 ## SSL Grade A+ handling
