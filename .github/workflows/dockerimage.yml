@@ -13,30 +13,27 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    # https://github.com/marketplace/actions/build-and-push-docker-images
     - name: Build the Docker image
-      env:
-        CACHE_IMAGE: macbre/nginx-brotli:latest
-        
-        # @see https://docs.docker.com/develop/develop-images/build_enhancements/
-        COMPOSE_DOCKER_CLI_BUILD: "1"
-        DOCKER_BUILDKIT: "1"
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        tags: macbre/nginx
+        cache-from: |
+          ghcr.io/macbre/nginx-brotli:latest
 
+    - name: Inspect images
       run: |
-        # build an image using the current Docker Hub container image as a layers cache
-
-        # @see https://docs.docker.com/engine/reference/commandline/build/#specifying-external-cache-sources
-        # no need to "docker pull $CACHE_IMAGE", BuildKit is clever enough to pull it when needed
-        docker build . \
-          --tag macbre/nginx \
-           --build-arg BUILDKIT_INLINE_CACHE=1 \
-          --cache-from $CACHE_IMAGE
-        docker images
+        docker images | head -n3
 
     - name: Run nginx -V
       run: docker run -t macbre/nginx nginx -V | sed 's/\-\-/\n\t--/g' | tee
 
     - name: Serve a static asset
       run: |
+        # expand commands
+        set -x
+
         ./run-docker.sh &
 
         sleep 2; docker ps
