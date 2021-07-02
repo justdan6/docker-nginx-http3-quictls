@@ -35,6 +35,7 @@ ARG CONFIG="\
 		--with-http_xslt_module=dynamic \
 		--with-http_image_filter_module=dynamic \
 		--with-http_geoip_module=dynamic \
+		--with-http_perl_module=dynamic \
 		--with-threads \
 		--with-stream \
 		--with-stream_ssl_module \
@@ -75,6 +76,7 @@ RUN \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
+		perl-dev \
 	&& apk add --no-cache --virtual .brotli-build-deps \
 		autoconf \
 		libtool \
@@ -156,6 +158,7 @@ COPY --from=base /etc/nginx /etc/nginx
 COPY --from=base /usr/lib/nginx/modules/*.so /usr/lib/nginx/modules/
 COPY --from=base /usr/sbin/nginx /usr/sbin/
 COPY --from=base /usr/share/nginx/html/* /usr/share/nginx/html/
+COPY --from=base /usr/local/lib/perl5/site_perl /usr/local/lib/perl5/site_perl
 COPY --from=base /usr/bin/envsubst /usr/local/bin/envsubst
 COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
 
