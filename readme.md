@@ -7,21 +7,19 @@ Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [QUIC + **HTTP/
 As this project is based on the official [nginx image](https://hub.docker.com/_/nginx/) look for instructions there. In addition to the standard configuration directives, you'll be able to use the brotli module specific ones, see [here for official documentation](https://github.com/google/ngx_brotli#configuration-directives)
 
 ```
-docker pull macbre/nginx-brotli:1.19.6-http3
+docker pull macbre/nginx-http3:latest
 ```
 
-Please refer to [the list of image tags](https://hub.docker.com/_/nginx/) as there more recent nginx versions there (but without http3 support).
-
-You can fetch an image from [Github Containers Registry](https://github.com/macbre/docker-nginx-brotli/pkgs/container/nginx-brotli) as well:
+You can fetch an image from [Github Containers Registry](https://github.com/macbre/docker-nginx-brotli/pkgs/container/nginx-http3) as well:
 
 ```
-docker pull ghcr.io/macbre/nginx-brotli:latest
+docker pull ghcr.io/macbre/nginx-http3:latest
 ```
 
 ## What's inside
 
 ```
-$ docker run -it macbre/nginx-brotli nginx -V
+$ docker run -it macbre/nginx-http3 nginx -V
 nginx version: nginx/1.21.0
 built by gcc 10.2.1 20201203 (Alpine 10.2.1_pre1) 
 built with OpenSSL 1.1.1 (compatible; BoringSSL) (running with BoringSSL)
