@@ -1,8 +1,13 @@
-ARG NGINX_VERSION=1.19.6
+# https://hg.nginx.org/nginx-quic/file/tip/src/core/nginx.h
+ARG NGINX_VERSION=1.21.0
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 
+# https://github.com/google/boringssl
+ARG BORINGSSL_COMMIT=067cfd92f4d7da0edfa073b096d090b98a83b860
+
+# https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
@@ -49,8 +54,6 @@ ARG CONFIG="\
 		--with-file-aio \
 		--with-http_v2_module \
 		--with-http_v3_module \
-		--with-openssl=/usr/src/quiche/deps/boringssl \
-		--with-quiche=/usr/src/quiche \
 		--add-module=/usr/src/ngx_brotli \
 	"
 
@@ -66,7 +69,10 @@ RUN \
 		gcc \
 		libc-dev \
 		make \
-		patch \
+		musl-dev \
+		go \
+		ninja \
+		mercurial \
 		openssl-dev \
 		pcre-dev \
 		zlib-dev \
@@ -89,38 +95,41 @@ COPY nginx.pub /tmp/nginx.pub
 WORKDIR /usr/src/
 
 RUN \
-	echo "Compiling nginx $NGINX_VERSION with brotli $NGX_BROTLI_COMMIT ..." \
+	echo "Cloning nginx $NGINX_VERSION (from 'quic' branch) ..." \
+	&& hg clone -b quic https://hg.nginx.org/nginx-quic /usr/src/nginx-$NGINX_VERSION
+
+RUN \
+	echo "Cloning brotli $NGX_BROTLI_COMMIT ..." \
 	&& mkdir /usr/src/ngx_brotli \
 	&& cd /usr/src/ngx_brotli \
 	&& git init \
 	&& git remote add origin https://github.com/google/ngx_brotli.git \
 	&& git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
 	&& git checkout --recurse-submodules -q FETCH_HEAD \
-	&& git submodule update --init --depth 1 \
-	&& cd .. \
-	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz -o nginx.tar.gz \
-	&& curl -fSL https://nginx.org/download/nginx-$NGINX_VERSION.tar.gz.asc  -o nginx.tar.gz.asc \
-        && sha512sum nginx.tar.gz nginx.tar.gz.asc \
-	&& export GNUPGHOME="$(mktemp -d)" \
-	&& gpg --import /tmp/nginx.pub \
-	&& gpg --batch --verify nginx.tar.gz.asc nginx.tar.gz \
-	&& tar -zxC /usr/src -f nginx.tar.gz \
-	&& echo "Fetching quiche and applying the patch..." \
-	&& cd /usr/src \
-	&& git clone --recursive https://github.com/cloudflare/quiche \
-	&& cd /usr/src/nginx-$NGINX_VERSION \
-	&& patch -p01 < /usr/src/quiche/extras/nginx/nginx-1.16.patch
+	&& git submodule update --init --depth 1
 
 RUN \
-	echo "Setting up rust ..." \
-	&& curl https://sh.rustup.rs -sSf | sh -s -- -y -q \
-	&& export PATH="$HOME/.cargo/bin:$PATH" \
-	&& rustc --version \
-	&& cargo --version \
-\
-	&& echo "Building nginx ..." \
+  echo "Cloning boringssl ..." \
+  && cd /usr/src \
+  && git clone https://github.com/google/boringssl \
+  && cd boringssl \
+  && git checkout $BORINGSSL_COMMIT
+
+RUN \
+  echo "Building boringssl ..." \
+  && cd /usr/src/boringssl \
+  && mkdir build \
+  && cd build \
+  && cmake -GNinja .. \
+  && ninja
+
+RUN \
+  echo "Building nginx ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
-	&& ./configure $CONFIG --build="quiche-$(git --git-dir=/usr/src/quiche/.git rev-parse --short HEAD)" \
+	&& ./auto/configure $CONFIG \
+      --with-cc-opt="-I../boringssl/include"   \
+      --with-ld-opt="-L../boringssl/build/ssl  \
+                     -L../boringssl/build/crypto" \
 	&& make -j$(getconf _NPROCESSORS_ONLN)
 
 RUN \
@@ -128,9 +137,6 @@ RUN \
 	&& make install \
 	&& rm -rf /etc/nginx/html/ \
 	&& mkdir /etc/nginx/conf.d/ \
-	&& mkdir -p /usr/share/nginx/html/ \
-	&& install -m644 html/index.html /usr/share/nginx/html/ \
-	&& install -m644 html/50x.html /usr/share/nginx/html/ \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	\
@@ -157,7 +163,6 @@ COPY --from=base /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=base /etc/nginx /etc/nginx
 COPY --from=base /usr/lib/nginx/modules/*.so /usr/lib/nginx/modules/
 COPY --from=base /usr/sbin/nginx /usr/sbin/
-COPY --from=base /usr/share/nginx/html/* /usr/share/nginx/html/
 COPY --from=base /usr/local/lib/perl5/site_perl /usr/local/lib/perl5/site_perl
 COPY --from=base /usr/bin/envsubst /usr/local/bin/envsubst
 COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem

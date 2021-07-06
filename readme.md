@@ -1,6 +1,6 @@
 ## What is this?
 
-Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [QUIC + HTTP/3 support](https://developers.cloudflare.com/http3/), [Google's `brotli` compression](https://github.com/google/ngx_brotli) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
+Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [QUIC + **HTTP/3 experimental support**](https://www.nginx.com/blog/introducing-technology-preview-nginx-support-for-quic-http-3/), [Google's `brotli` compression](https://github.com/google/ngx_brotli) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
 
 
 ## How to use this image
@@ -22,7 +22,7 @@ docker pull ghcr.io/macbre/nginx-brotli:latest
 
 ```
 $ docker run -it macbre/nginx-brotli nginx -V
-nginx version: nginx/1.19.6 (quiche-5afe288)
+nginx version: nginx/1.21.0
 built by gcc 10.2.1 20201203 (Alpine 10.2.1_pre1) 
 built with OpenSSL 1.1.1 (compatible; BoringSSL) (running with BoringSSL)
 TLS SNI support enabled
@@ -72,10 +72,9 @@ configure arguments:
 	--with-file-aio 
 	--with-http_v2_module 
 	--with-http_v3_module 
-	--with-openssl=/usr/src/quiche/deps/boringssl 
-	--with-quiche=/usr/src/quiche 
 	--add-module=/usr/src/ngx_brotli 
-	--build=quiche-5afe288
+	--with-cc-opt=-I../boringssl/include 
+	--with-ld-opt='-L../boringssl/build/ssl -L../boringssl/build/crypto'
 ```
 
 ## SSL Grade A+ handling
