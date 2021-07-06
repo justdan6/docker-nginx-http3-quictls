@@ -99,9 +99,9 @@ Please refer to `tests/https.conf` config file for an example config used by the
 ```
 server {
     # quic and http/3
-    listen 443 quic reuseport;
+    listen 443 http3 reuseport;
 
-    # http/2
+    # http/2 and http/1.1
     listen 443 ssl http2;
 
     server_name localhost;  # customize to match your domain
@@ -118,6 +118,9 @@ server {
 
     # Add Alt-Svc header to negotiate HTTP/3.
     add_header alt-svc 'h3-27=":443"; ma=86400, h3-28=":443"; ma=86400, h3-29=":443"; ma=86400';
+
+    # Sent when QUIC was used
+    add_header QUIC-Status $quic;
 
     location / {
         # your config
