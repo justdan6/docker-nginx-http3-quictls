@@ -12,6 +12,7 @@ ARG BORINGSSL_COMMIT=067cfd92f4d7da0edfa073b096d090b98a83b860
 
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
+		--build=quic-$NGX_BROTLI_COMMIT \
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
 		--modules-path=/usr/lib/nginx/modules \
