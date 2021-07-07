@@ -95,7 +95,6 @@ RUN \
 		g++ \
 		cmake
 
-COPY nginx.pub /tmp/nginx.pub
 WORKDIR /usr/src/
 
 RUN \
