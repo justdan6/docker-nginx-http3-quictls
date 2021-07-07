@@ -26,10 +26,9 @@ jobs:
       run: |
         docker images | head -n3
 
-    - name: Run nginx -V and env
+    - name: Run nginx -V
       run: |
         docker run -t macbre/nginx nginx -V | sed 's/\-\-/\n\t--/g' | tee
-        docker run -t macbre/nginx env | grep NGINX_ | sort
 
     - name: Serve a static asset
       run: |
