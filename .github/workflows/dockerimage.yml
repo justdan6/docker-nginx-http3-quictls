@@ -20,7 +20,7 @@ jobs:
         context: .
         tags: macbre/nginx
         cache-from: |
-          ghcr.io/macbre/nginx-brotli:latest
+          ghcr.io/macbre/nginx-http3:latest
 
     - name: Inspect images
       run: |
