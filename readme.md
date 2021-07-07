@@ -22,7 +22,7 @@ docker pull ghcr.io/macbre/nginx-http3:latest
 ```
 $ docker run -it macbre/nginx-http3 nginx -V
 nginx version: nginx/1.21.0 (quic-5b0c229ba5fe)
-built by gcc 10.2.1 20201203 (Alpine 10.2.1_pre1) 
+built by gcc 10.3.1 20210424 (Alpine 10.3.1_git20210424) 
 built with OpenSSL 1.1.1 (compatible; BoringSSL) (running with BoringSSL)
 TLS SNI support enabled
 configure arguments: 
