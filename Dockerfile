@@ -1,6 +1,9 @@
 # https://hg.nginx.org/nginx-quic/file/tip/src/core/nginx.h
 ARG NGINX_VERSION=1.21.0
 
+# https://hg.nginx.org/nginx-quic/shortlog/quic
+ARG NGINX_COMMIT=5b0c229ba5fe
+
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 
@@ -9,6 +12,7 @@ ARG BORINGSSL_COMMIT=067cfd92f4d7da0edfa073b096d090b98a83b860
 
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
+		--build=quic-$NGINX_COMMIT \
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
 		--modules-path=/usr/lib/nginx/modules \
@@ -61,6 +65,7 @@ FROM alpine:3.13 AS base
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
 ARG NGINX_VERSION
+ARG NGINX_COMMIT
 ARG NGX_BROTLI_COMMIT
 ARG CONFIG
 
@@ -94,8 +99,8 @@ RUN \
 WORKDIR /usr/src/
 
 RUN \
-	echo "Cloning nginx $NGINX_VERSION (from 'quic' branch) ..." \
-	&& hg clone -b quic https://hg.nginx.org/nginx-quic /usr/src/nginx-$NGINX_VERSION
+	echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'quic' branch) ..." \
+	&& hg clone -b quic --rev $NGINX_COMMIT https://hg.nginx.org/nginx-quic /usr/src/nginx-$NGINX_VERSION
 
 RUN \
 	echo "Cloning brotli $NGX_BROTLI_COMMIT ..." \
@@ -157,6 +162,10 @@ RUN \
 
 FROM alpine:3.13
 ARG NGINX_VERSION
+ARG NGINX_COMMIT
+
+ENV NGINX_VERSION $NGINX_VERSION
+ENV NGINX_COMMIT $NGINX_COMMIT
 
 COPY --from=base /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=base /etc/nginx /etc/nginx
@@ -180,6 +189,9 @@ RUN \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY ssl_common.conf /etc/nginx/conf.d/ssl_common.conf
+
+# show env
+RUN env | sort
 
 # test the configuration
 RUN nginx -V; nginx -t
