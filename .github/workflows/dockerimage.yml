@@ -12,6 +12,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    # https://github.com/FiloSottile/mkcert#installation
+    - name: Install and setup mkcert
+      run: |
+        set -x
+        sudo apt install -y libnss3-tools
+
+        curl https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64 -O /tmp/mkcert
+        chmod 744 /tmp/mkcert
+        sudo mv /tmp/mkcert /bin/mkcert
+
+        mkcert -install
 
     # https://github.com/marketplace/actions/build-and-push-docker-images
     - name: Build the Docker image
