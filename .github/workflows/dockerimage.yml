@@ -15,11 +15,13 @@ jobs:
     
     # https://github.com/FiloSottile/mkcert#installation
     - name: Install and setup mkcert
+      env:
+        MKCERT_VERSION: v1.4.3
       run: |
         set -x
         sudo apt install -y libnss3-tools
 
-        curl https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64 --output /tmp/mkcert
+        curl https://github.com/FiloSottile/mkcert/releases/download/${MKCERT_VERSION}/mkcert-${MKCERT_VERSION}-linux-amd64 --location --output /tmp/mkcert
         chmod 744 /tmp/mkcert
         sudo mv /tmp/mkcert /bin/mkcert
 
