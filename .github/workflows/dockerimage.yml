@@ -19,7 +19,7 @@ jobs:
         set -x
         sudo apt install -y libnss3-tools
 
-        curl https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64 -O /tmp/mkcert
+        curl https://github.com/FiloSottile/mkcert/releases/download/v1.4.3/mkcert-v1.4.3-linux-amd64 --output /tmp/mkcert
         chmod 744 /tmp/mkcert
         sudo mv /tmp/mkcert /bin/mkcert
 
