@@ -27,6 +27,10 @@ jobs:
 
         mkcert -install
 
+    - name: Create signed TLS certificates for localhost
+      run: |
+        mkcert -cert-file tests/localhost.crt, -key-file tests/localhost.key localhost
+
     # https://github.com/marketplace/actions/build-and-push-docker-images
     - name: Build the Docker image
       uses: docker/build-push-action@v2
@@ -52,14 +56,14 @@ jobs:
         ./run-docker.sh &
 
         sleep 2; docker ps
-        curl -v --compressed 0.0.0.0:8888 2>&1 | tee /tmp/out
+        curl -v --compressed localhost:8888 2>&1 | tee /tmp/out
 
         grep --fixed-strings '< Server: nginx' /tmp/out
         grep --fixed-strings '< Content-Encoding: br' /tmp/out
         grep --fixed-strings '<p>It works!</p>' /tmp/out
 
 
-        curl -v --compressed --insecure https://0.0.0.0:8889 2>&1 | tee /tmp/h2
+        curl -v --compressed https://localhost:8889 2>&1 | tee /tmp/h2
 
         grep --fixed-strings '< HTTP/2 200' /tmp/h2
         grep --fixed-strings '< server: nginx' /tmp/h2
@@ -67,7 +71,7 @@ jobs:
 
 
         docker run --rm --network host ymuski/curl-http3 \
-          curl -v --insecure https://localhost:8889 --http3 2>&1 | tee /tmp/h3
+          curl -v https://localhost:8889 --http3 2>&1 | tee /tmp/h3
 
         grep --fixed-strings '< HTTP/3 200' /tmp/h3
         grep --fixed-strings '< server: nginx' /tmp/h3
