@@ -160,7 +160,7 @@ RUN \
 			| xargs -r apk info --installed \
 			| sort -u > /tmp/runDeps.txt
 
-FROM alpine:3.13
+FROM alpine:3.14
 ARG NGINX_VERSION
 ARG NGINX_COMMIT
 
