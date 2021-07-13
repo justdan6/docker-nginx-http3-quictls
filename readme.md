@@ -128,3 +128,11 @@ server {
 ```
 
 Refer to `run-docker.sh` script on how to run this container and properly mount required config files and assets.
+
+## Development
+
+Building an image:
+
+```
+DOCKER_BUILDKIT=1 docker build . -t macbre/nginx --cache-from=ghcr.io/macbre/nginx-http3:latest --progress=plain
+```
