@@ -8,7 +8,7 @@ ARG NGINX_COMMIT=d0ef43a53a51
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 
 # https://github.com/google/boringssl
-ARG BORINGSSL_COMMIT=067cfd92f4d7da0edfa073b096d090b98a83b860
+ARG BORINGSSL_COMMIT=c1571feb5faf5cce844354c63d0f3e842464bea3
 
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
