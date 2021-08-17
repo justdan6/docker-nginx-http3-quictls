@@ -2,13 +2,13 @@
 ARG NGINX_VERSION=1.21.1
 
 # https://hg.nginx.org/nginx-quic/shortlog/quic
-ARG NGINX_COMMIT=d0ef43a53a51
+ARG NGINX_COMMIT=e5a180511dec
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 
 # https://github.com/google/boringssl
-ARG BORINGSSL_COMMIT=c1571feb5faf5cce844354c63d0f3e842464bea3
+ARG BORINGSSL_COMMIT=006f20ad7f9a6ce53b44390c0689f3690bf73ad1
 
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
