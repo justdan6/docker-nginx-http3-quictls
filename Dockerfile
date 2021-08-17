@@ -12,7 +12,7 @@ ARG BORINGSSL_COMMIT=006f20ad7f9a6ce53b44390c0689f3690bf73ad1
 
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
-		--build=quic-$NGINX_COMMIT \
+		--build=quic-$NGINX_COMMIT-boringssl-$BORINGSSL_COMMIT \
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
 		--modules-path=/usr/lib/nginx/modules \
