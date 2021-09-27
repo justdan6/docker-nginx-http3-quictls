@@ -10,6 +10,9 @@ ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 # https://github.com/google/boringssl
 ARG BORINGSSL_COMMIT=006f20ad7f9a6ce53b44390c0689f3690bf73ad1
 
+# https://github.com/openresty/headers-more-nginx-module#installation
+ARG HEADERS_MORE_VERSION=0.33
+
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
 		--build=quic-$NGINX_COMMIT-boringssl-$BORINGSSL_COMMIT \
@@ -59,6 +62,7 @@ ARG CONFIG="\
 		--with-http_v2_module \
 		--with-http_v3_module \
 		--add-module=/usr/src/ngx_brotli \
+		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
 	"
 
 FROM alpine:3.14 AS base
@@ -67,6 +71,7 @@ LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 ARG NGINX_VERSION
 ARG NGINX_COMMIT
 ARG NGX_BROTLI_COMMIT
+ARG HEADERS_MORE_VERSION
 ARG CONFIG
 
 RUN \
@@ -126,6 +131,12 @@ RUN \
   && cd build \
   && cmake -GNinja .. \
   && ninja
+
+RUN \
+  echo "Downloading headers-more-nginx-module ..." \
+  && cd /usr/src \
+  && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
+  && tar -xf headers-more-nginx-module.tar.gz
 
 RUN \
   echo "Building nginx ..." \
