@@ -73,7 +73,7 @@ jobs:
         curl -v --compressed https://localhost:8889 2>&1 | tee /tmp/h2
 
         grep --fixed-strings '< HTTP/2 200' /tmp/h2
-        grep --fixed-strings '< server: nginx' /tmp/h2
+        grep --fixed-strings --invert-match -i '< server: nginx' /tmp/h2 > /dev/null
         grep --fixed-strings '<p>It works!</p>' /tmp/h2
 
 
@@ -81,7 +81,7 @@ jobs:
           curl -v https://localhost:8889 --http3 2>&1 | tee /tmp/h3
 
         grep --fixed-strings '< HTTP/3 200' /tmp/h3
-        grep --fixed-strings '< server: nginx' /tmp/h3
+        grep --fixed-strings --invert-match -i '< server: nginx' /tmp/h3 > /dev/null
         grep --fixed-strings '< alt-svc: h3-27=":8889"; ma=86400, h3-28=":8889"; ma=86400, h3-29=":8889"; ma=86400' /tmp/h3
         grep --fixed-strings '< quic-status: quic' /tmp/h3
         grep --fixed-strings '<p>It works!</p>' /tmp/h3
