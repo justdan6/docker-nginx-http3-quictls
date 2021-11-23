@@ -47,7 +47,6 @@ ARG CONFIG="\
 		--with-http_xslt_module=dynamic \
 		--with-http_image_filter_module=dynamic \
 		--with-http_geoip_module=dynamic \
-		--with-http_geoip2_module=dynamic \
 		--with-http_perl_module=dynamic \
 		--with-threads \
 		--with-stream \
@@ -55,7 +54,6 @@ ARG CONFIG="\
 		--with-stream_ssl_preread_module \
 		--with-stream_realip_module \
 		--with-stream_geoip_module=dynamic \
-		--with-stream_geoip2_module=dynamic \
 		--with-http_slice_module \
 		--with-mail \
 		--with-mail_ssl_module \
@@ -65,6 +63,7 @@ ARG CONFIG="\
 		--with-http_v3_module \
 		--add-module=/usr/src/ngx_brotli \
 		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
+		--add-dynamic-module=/ngx_http_geoip2_module \
 	"
 
 FROM alpine:3.14 AS base
@@ -75,6 +74,21 @@ ARG NGINX_COMMIT
 ARG NGX_BROTLI_COMMIT
 ARG HEADERS_MORE_VERSION
 ARG CONFIG
+
+#Install GeoIp2. Thanks to https://github.com/bubelov/nginx-alpine-geoip2/blob/master/Dockerfile
+RUN set -x \
+  && apk add --no-cache --virtual .build-deps \
+    alpine-sdk \
+    perl \
+  && git clone https://github.com/leev/ngx_http_geoip2_module /ngx_http_geoip2_module \
+  && wget https://github.com/maxmind/libmaxminddb/releases/download/${MAXMIND_VERSION}/libmaxminddb-${MAXMIND_VERSION}.tar.gz \
+  && tar xf libmaxminddb-${MAXMIND_VERSION}.tar.gz \
+  && cd libmaxminddb-${MAXMIND_VERSION} \
+  && ./configure \
+  && make \
+  && make check \
+  && make install \
+  && apk del .build-deps
 
 RUN \
 	apk add --no-cache --virtual .build-deps \
