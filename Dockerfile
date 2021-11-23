@@ -47,6 +47,7 @@ ARG CONFIG="\
 		--with-http_xslt_module=dynamic \
 		--with-http_image_filter_module=dynamic \
 		--with-http_geoip_module=dynamic \
+		--with-http_geoip2_module=dynamic \
 		--with-http_perl_module=dynamic \
 		--with-threads \
 		--with-stream \
