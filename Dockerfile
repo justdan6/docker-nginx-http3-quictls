@@ -76,13 +76,14 @@ ARG HEADERS_MORE_VERSION
 ARG CONFIG
 
 ARG MAXMIND_VERSION=1.2.1
+ARG GEOIP2_VERSION=3.3
 
 #Install GeoIp2. Thanks to https://github.com/bubelov/nginx-alpine-geoip2/blob/master/Dockerfile
 RUN set -x \
   && apk add --no-cache --virtual .build-deps \
     alpine-sdk \
     perl \
-  && git clone https://github.com/leev/ngx_http_geoip2_module /ngx_http_geoip2_module \
+  && git clone --depth 1 --branch ${GEOIP2_VERSION} https://github.com/leev/ngx_http_geoip2_module /ngx_http_geoip2_module \
   && wget https://github.com/maxmind/libmaxminddb/releases/download/${MAXMIND_VERSION}/libmaxminddb-${MAXMIND_VERSION}.tar.gz \
   && tar xf libmaxminddb-${MAXMIND_VERSION}.tar.gz \
   && cd libmaxminddb-${MAXMIND_VERSION} \
