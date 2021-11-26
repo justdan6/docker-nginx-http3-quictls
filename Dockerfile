@@ -75,7 +75,7 @@ ARG NGX_BROTLI_COMMIT
 ARG HEADERS_MORE_VERSION
 ARG CONFIG
 
-ARG MAXMIND_VERSION=1.2.1
+ARG MAXMIND_VERSION=1.6.0
 ARG GEOIP2_VERSION=3.3
 
 #Install GeoIp2. Thanks to https://github.com/bubelov/nginx-alpine-geoip2/blob/master/Dockerfile
