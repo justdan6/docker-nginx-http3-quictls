@@ -1,14 +1,14 @@
 # https://hg.nginx.org/nginx-quic/file/tip/src/core/nginx.h
-ARG NGINX_VERSION=1.21.5
+ARG NGINX_VERSION=1.21.6
 
 # https://hg.nginx.org/nginx-quic/shortlog/quic
-ARG NGINX_COMMIT=de7d36aa9bc7
+ARG NGINX_COMMIT=7c2adf237091
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 
 # https://github.com/google/boringssl
-ARG BORINGSSL_COMMIT=b3ed071ecc4efb77afd0a025ea1078da19578bfd
+ARG BORINGSSL_COMMIT=123eaaef26abc278f53ae338e9c758eb01c70b08
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 ARG HEADERS_MORE_VERSION=0.33
