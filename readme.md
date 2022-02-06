@@ -19,6 +19,11 @@ docker pull ghcr.io/macbre/nginx-http3:latest
 
 ## What's inside
 
+* [built-in nginx modules](https://nginx.org/en/docs/)
+* [`headers-more-nginx-module`](https://github.com/openresty/headers-more-nginx-module#readme) - sets and clears HTTP request and response headers
+* [`ngx_brotli`](https://github.com/google/ngx_brotli#configuration-directives) - adds [brotli response compression](https://datatracker.ietf.org/doc/html/rfc7932)
+* [`ngx_http_geoip2_module`](https://github.com/leev/ngx_http_geoip2_module#download-maxmind-geolite2-database-optional) - creates variables with values from the maxmind geoip2 databases based on the client IP
+
 ```
 $ docker run -it macbre/nginx-http3 nginx -V
 nginx version: nginx/1.21.6 (quic-7c2adf237091-boringssl-123eaaef26abc278f53ae338e9c758eb01c70b08)
