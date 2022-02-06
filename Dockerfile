@@ -75,22 +75,16 @@ ARG NGX_BROTLI_COMMIT
 ARG HEADERS_MORE_VERSION
 ARG CONFIG
 
-ARG MAXMIND_VERSION=1.6.0
+# https://github.com/leev/ngx_http_geoip2_module/releases
 ARG GEOIP2_VERSION=3.3
 
-#Install GeoIp2. Thanks to https://github.com/bubelov/nginx-alpine-geoip2/blob/master/Dockerfile
-RUN set -x \
-  && apk add --no-cache --virtual .build-deps \
-    alpine-sdk \
-    perl \
+RUN \
+  apk add --no-cache --virtual .build-deps \
+    git \
+  # ngx_http_geoip2_module needs libmaxminddb-dev
+  && apk add --no-cache libmaxminddb-dev \
+  \
   && git clone --depth 1 --branch ${GEOIP2_VERSION} https://github.com/leev/ngx_http_geoip2_module /ngx_http_geoip2_module \
-  && wget https://github.com/maxmind/libmaxminddb/releases/download/${MAXMIND_VERSION}/libmaxminddb-${MAXMIND_VERSION}.tar.gz \
-  && tar xf libmaxminddb-${MAXMIND_VERSION}.tar.gz \
-  && cd libmaxminddb-${MAXMIND_VERSION} \
-  && ./configure \
-  && make \
-  && make check \
-  && make install \
   && apk del .build-deps
 
 RUN \
