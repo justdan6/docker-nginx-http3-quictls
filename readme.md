@@ -102,7 +102,7 @@ Please refer to `tests/https.conf` config file for an example config used by the
 
 ```
 server {
-    # quic and http/3
+    # http/3
     listen 443 http3 reuseport;
 
     # http/2 and http/1.1
@@ -124,7 +124,7 @@ server {
     add_header alt-svc 'h3-27=":443"; ma=86400, h3-28=":443"; ma=86400, h3-29=":443"; ma=86400';
 
     # Sent when QUIC was used
-    add_header QUIC-Status $quic;
+    add_header QUIC-Status $http3;
 
     location / {
         # your config
