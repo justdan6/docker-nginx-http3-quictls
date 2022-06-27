@@ -149,7 +149,7 @@ RUN \
 RUN \
   echo "Downloading headers-more-nginx-module ..." \
   && cd /usr/src \
-  && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/heads/{HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
+  && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/heads/${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
   && tar -xf headers-more-nginx-module.tar.gz
 
 RUN \
