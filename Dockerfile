@@ -77,7 +77,7 @@ ARG HEADERS_MORE_VERSION
 ARG CONFIG
 
 # https://github.com/leev/ngx_http_geoip2_module/releases
-ARG GEOIP2_VERSION=3.3
+ARG GEOIP2_VERSION=3.4
 
 RUN \
   apk add --no-cache --virtual .build-deps \
