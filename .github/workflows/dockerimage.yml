@@ -79,7 +79,7 @@ jobs:
 
 
         docker run --rm --network host ymuski/curl-http3 \
-          curl -v https://localhost:8889 --http3 2>&1 | tee /tmp/h3
+          curl -v https://localhost:8889 --http3 --max-time 5 2>&1 | tee /tmp/h3
 
         grep --fixed-strings '< HTTP/3 200' /tmp/h3
         grep --fixed-strings --invert-match -i '< server: nginx' /tmp/h3 > /dev/null
@@ -87,4 +87,6 @@ jobs:
         grep --fixed-strings '< quic-status: h3' /tmp/h3
         grep --fixed-strings '<p>It works!</p>' /tmp/h3
 
-        docker logs test_nginx
+    - name: Show logs
+      if: always()
+      run: docker logs test_nginx
