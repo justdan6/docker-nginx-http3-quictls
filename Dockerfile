@@ -12,7 +12,7 @@ ARG BORINGSSL_COMMIT=123eaaef26abc278f53ae338e9c758eb01c70b08
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
-ARG HEADERS_MORE_VERSION=master
+ARG HEADERS_MORE_VERSION=0.34
 
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
@@ -149,7 +149,7 @@ RUN \
 RUN \
   echo "Downloading headers-more-nginx-module ..." \
   && cd /usr/src \
-  && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/heads/${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
+  && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
   && tar -xf headers-more-nginx-module.tar.gz
 
 RUN \
