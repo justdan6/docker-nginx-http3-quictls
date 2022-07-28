@@ -8,7 +8,7 @@ ARG NGINX_COMMIT=b30bec3d71d6
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 
 # https://github.com/google/boringssl
-ARG BORINGSSL_COMMIT=123eaaef26abc278f53ae338e9c758eb01c70b08
+ARG BORINGSSL_COMMIT=8ce0e1c14e48109773f1e94e5f8b020aa1e24dc5
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
