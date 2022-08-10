@@ -1,17 +1,18 @@
-# https://hg.nginx.org/nginx-quic/file/tip/src/core/nginx.h
-ARG NGINX_VERSION=1.21.6
+# https://hg.nginx.org/nginx-quic/fie/tip/src/core/nginx.h
+ARG NGINX_VERSION=1.23.1
 
 # https://hg.nginx.org/nginx-quic/shortlog/quic
-ARG NGINX_COMMIT=7c2adf237091
+ARG NGINX_COMMIT=3550b00d9dc8
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
 
 # https://github.com/google/boringssl
-ARG BORINGSSL_COMMIT=123eaaef26abc278f53ae338e9c758eb01c70b08
+ARG BORINGSSL_COMMIT=8ce0e1c14e48109773f1e94e5f8b020aa1e24dc5
 
 # https://github.com/openresty/headers-more-nginx-module#installation
-ARG HEADERS_MORE_VERSION=0.33
+# we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
+ARG HEADERS_MORE_VERSION=0.34
 
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
@@ -76,7 +77,7 @@ ARG HEADERS_MORE_VERSION
 ARG CONFIG
 
 # https://github.com/leev/ngx_http_geoip2_module/releases
-ARG GEOIP2_VERSION=3.3
+ARG GEOIP2_VERSION=3.4
 
 RUN \
   apk add --no-cache --virtual .build-deps \
