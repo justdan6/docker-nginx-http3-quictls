@@ -5,7 +5,7 @@ ARG NGINX_VERSION=1.23.1
 ARG NGINX_COMMIT=3550b00d9dc8
 
 # https://github.com/google/ngx_brotli
-ARG NGX_BROTLI_COMMIT=9aec15e2aa6feea2113119ba06460af70ab3ea62
+ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 
 # https://github.com/google/boringssl
 ARG BORINGSSL_COMMIT=8ce0e1c14e48109773f1e94e5f8b020aa1e24dc5
@@ -67,7 +67,7 @@ ARG CONFIG="\
 		--add-dynamic-module=/ngx_http_geoip2_module \
 	"
 
-FROM alpine:3.14 AS base
+FROM alpine:3.16 AS base
 LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
 ARG NGINX_VERSION
@@ -102,7 +102,7 @@ RUN \
 		zlib-dev \
 		linux-headers \
 		curl \
-		gnupg1 \
+		gnupg \
 		libxslt-dev \
 		gd-dev \
 		geoip-dev \
@@ -185,7 +185,7 @@ RUN \
 			| xargs -r apk info --installed \
 			| sort -u > /tmp/runDeps.txt
 
-FROM alpine:3.14
+FROM alpine:3.16
 ARG NGINX_VERSION
 ARG NGINX_COMMIT
 
