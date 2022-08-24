@@ -10,6 +10,9 @@ ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 # https://github.com/google/boringssl
 ARG BORINGSSL_COMMIT=8ce0e1c14e48109773f1e94e5f8b020aa1e24dc5
 
+# http://hg.nginx.org/njs
+ARG NJS_COMMIT=b33aae5e8dc6
+
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
 ARG HEADERS_MORE_VERSION=0.34
@@ -65,6 +68,7 @@ ARG CONFIG="\
 		--add-module=/usr/src/ngx_brotli \
 		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
 		--add-dynamic-module=/ngx_http_geoip2_module \
+		--add-dynamic-module=/usr/src/njs \
 	"
 
 FROM alpine:3.16 AS base
@@ -74,6 +78,7 @@ ARG NGINX_VERSION
 ARG NGINX_COMMIT
 ARG NGX_BROTLI_COMMIT
 ARG HEADERS_MORE_VERSION
+ARG NJS_COMMIT
 ARG CONFIG
 
 # https://github.com/leev/ngx_http_geoip2_module/releases
@@ -151,6 +156,11 @@ RUN \
   && cd /usr/src \
   && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
   && tar -xf headers-more-nginx-module.tar.gz
+
+RUN \
+  echo "Cloning njs ..." \
+  && cd /usr/src \
+  && hg clone --rev ${NJS_COMMIT} http://hg.nginx.org/njs
 
 RUN \
   echo "Building nginx ..." \
