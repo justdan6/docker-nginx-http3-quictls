@@ -81,6 +81,7 @@ configure arguments:
 	--add-module=/usr/src/ngx_brotli 
 	--add-module=/usr/src/headers-more-nginx-module-0.34 
 	--add-dynamic-module=/ngx_http_geoip2_module 
+	--add-dynamic-module=/usr/src/njs/nginx 
 	--with-cc-opt=-I../boringssl/include 
 	--with-ld-opt='-L../boringssl/build/ssl -L../boringssl/build/crypto'
 ```
