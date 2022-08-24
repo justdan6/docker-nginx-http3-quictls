@@ -68,7 +68,7 @@ ARG CONFIG="\
 		--add-module=/usr/src/ngx_brotli \
 		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
 		--add-dynamic-module=/ngx_http_geoip2_module \
-		--add-dynamic-module=/usr/src/njs \
+		--add-dynamic-module=/usr/src/njs/nginx \
 	"
 
 FROM alpine:3.16 AS base
@@ -158,9 +158,13 @@ RUN \
   && tar -xf headers-more-nginx-module.tar.gz
 
 RUN \
-  echo "Cloning njs ..." \
+  echo "Cloning and configuring njs ..." \
   && cd /usr/src \
-  && hg clone --rev ${NJS_COMMIT} http://hg.nginx.org/njs
+  && hg clone --rev ${NJS_COMMIT} http://hg.nginx.org/njs \
+  && cd /usr/src/njs \
+  && ./configure \
+  && make \
+  && make ts
 
 RUN \
   echo "Building nginx ..." \
