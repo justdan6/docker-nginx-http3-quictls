@@ -216,7 +216,6 @@ COPY --from=base /usr/sbin/nginx /usr/sbin/
 COPY --from=base /usr/local/lib/perl5/site_perl /usr/local/lib/perl5/site_perl
 COPY --from=base /usr/bin/envsubst /usr/local/bin/envsubst
 COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
-COPY --from=base /usr/src/njs/ts /usr/src/njs/ts
 
 RUN \
 	addgroup -S nginx \
