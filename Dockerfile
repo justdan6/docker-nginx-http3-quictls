@@ -119,7 +119,9 @@ RUN \
 		automake \
 		git \
 		g++ \
-		cmake
+		cmake \
+	&& apk add --no-cache --virtual .njs-build-deps \
+		readline-dev
 
 WORKDIR /usr/src/
 
@@ -164,7 +166,7 @@ RUN \
   && hg clone --rev ${NJS_COMMIT} http://hg.nginx.org/njs \
   && cd /usr/src/njs \
   && ./configure \
-  && make \
+  && make njs \
   && make ts
 
 RUN \
@@ -214,6 +216,7 @@ COPY --from=base /usr/sbin/nginx /usr/sbin/
 COPY --from=base /usr/local/lib/perl5/site_perl /usr/local/lib/perl5/site_perl
 COPY --from=base /usr/bin/envsubst /usr/local/bin/envsubst
 COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
+COPY --from=base /usr/src/njs/ts /usr/src/njs/ts
 
 RUN \
 	addgroup -S nginx \
