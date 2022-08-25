@@ -48,8 +48,7 @@ jobs:
     - name: Run nginx -V and njs -v
       run: |
         docker run -t macbre/nginx nginx -V | sed 's/\-\-/\n\t--/g' | tee
-	echo
-        njs v$(docker run -t macbre/nginx njs -v)
+	njs $(v docker run -t macbre/nginx njs -v)
 
     - name: Serve a static asset
       run: |
