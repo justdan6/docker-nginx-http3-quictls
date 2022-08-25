@@ -112,7 +112,6 @@ RUN \
 		gd-dev \
 		geoip-dev \
 		perl-dev \
-		readline \
 	&& apk add --no-cache --virtual .brotli-build-deps \
 		autoconf \
 		libtool \
