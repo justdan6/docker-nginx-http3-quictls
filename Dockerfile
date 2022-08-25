@@ -166,7 +166,8 @@ RUN \
   && cd /usr/src/njs \
   && ./configure \
   && make njs \
-  && make ts
+  && mv /usr/src/njs/build/njs /usr/sbin/njs \
+  && echo "njs v$(njs -v)"
 
 RUN \
   echo "Building nginx ..." \
@@ -195,7 +196,7 @@ RUN \
 	# be deleted completely, then move `envsubst` back.
 	&& apk add --no-cache --virtual .gettext gettext \
 	\
-	&& scanelf --needed --nobanner /usr/sbin/nginx /usr/lib/nginx/modules/*.so /usr/bin/envsubst \
+	&& scanelf --needed --nobanner /usr/sbin/nginx /usr/sbin/njs /usr/lib/nginx/modules/*.so /usr/bin/envsubst \
 			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
 			| sort -u \
 			| xargs -r apk info --installed \
@@ -216,6 +217,8 @@ COPY --from=base /usr/local/lib/perl5/site_perl /usr/local/lib/perl5/site_perl
 COPY --from=base /usr/bin/envsubst /usr/local/bin/envsubst
 COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
 
+COPY --from=base /usr/sbin/njs /usr/sbin/njs
+
 RUN \
 	addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -233,6 +236,9 @@ COPY ssl_common.conf /etc/nginx/conf.d/ssl_common.conf
 
 # show env
 RUN env | sort
+
+# njs version
+RUN njs -v
 
 # test the configuration
 RUN nginx -V; nginx -t
