@@ -17,6 +17,9 @@ ARG NJS_COMMIT=b33aae5e8dc6
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
 ARG HEADERS_MORE_VERSION=0.34
 
+# https://github.com/leev/ngx_http_geoip2_module/releases
+ARG GEOIP2_VERSION=3.4
+
 # https://hg.nginx.org/nginx-quic/file/quic/README#l72
 ARG CONFIG="\
 		--build=quic-$NGINX_COMMIT-boringssl-$BORINGSSL_COMMIT \
@@ -68,7 +71,7 @@ ARG CONFIG="\
 		--add-module=/usr/src/ngx_brotli \
 		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
 		--add-module=/usr/src/njs/nginx \
-		--add-dynamic-module=/ngx_http_geoip2_module \
+		--add-dynamic-module=/usr/src/ngx_http_geoip2_module \
 	"
 
 FROM alpine:3.16 AS base
@@ -79,19 +82,8 @@ ARG NGINX_COMMIT
 ARG NGX_BROTLI_COMMIT
 ARG HEADERS_MORE_VERSION
 ARG NJS_COMMIT
+ARG GEOIP2_VERSION
 ARG CONFIG
-
-# https://github.com/leev/ngx_http_geoip2_module/releases
-ARG GEOIP2_VERSION=3.4
-
-RUN \
-  apk add --no-cache --virtual .build-deps \
-    git \
-  # ngx_http_geoip2_module needs libmaxminddb-dev
-  && apk add --no-cache libmaxminddb-dev \
-  \
-  && git clone --depth 1 --branch ${GEOIP2_VERSION} https://github.com/leev/ngx_http_geoip2_module /ngx_http_geoip2_module \
-  && apk del .build-deps
 
 RUN \
 	apk add --no-cache --virtual .build-deps \
@@ -119,6 +111,8 @@ RUN \
 		git \
 		g++ \
 		cmake \
+	&& apk add --no-cache --virtual .geoip2-build-deps \
+		libmaxminddb-dev \
 	&& apk add --no-cache --virtual .njs-build-deps \
 		readline-dev
 
@@ -158,6 +152,10 @@ RUN \
   && cd /usr/src \
   && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
   && tar -xf headers-more-nginx-module.tar.gz
+
+RUN \
+  echo "Downloading ngx_http_geoip2_module ..." \
+  && git clone --depth 1 --branch ${GEOIP2_VERSION} https://github.com/leev/ngx_http_geoip2_module /usr/src/ngx_http_geoip2_module
 
 RUN \
   echo "Cloning and configuring njs ..." \
