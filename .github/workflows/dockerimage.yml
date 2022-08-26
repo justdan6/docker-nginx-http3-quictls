@@ -71,6 +71,17 @@ jobs:
         grep --fixed-strings '< x-rewrite: 1' /tmp/out
         grep --fixed-strings '< Location: http://localhost/foobar' /tmp/out
 
+    - name: Check njs module
+      run: |
+        set -x
+
+        curl -v --compressed localhost:8888/hello 2>&1 | tee /tmp/out
+        grep --fixed-strings '< x-njs: 1' /tmp/out
+        grep 'Hello world from njs' /tmp/out
+
+    - name: http2 vs h3
+      run: |
+        set -x
 
         curl -v --compressed https://localhost:8889 2>&1 | tee /tmp/h2
 
