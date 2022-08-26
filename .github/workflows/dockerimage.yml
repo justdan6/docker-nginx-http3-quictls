@@ -45,9 +45,10 @@ jobs:
       run: |
         docker images | head -n3
 
-    - name: Run nginx -V
+    - name: Run nginx -V and njs -v
       run: |
         docker run -t macbre/nginx nginx -V | sed 's/\-\-/\n\t--/g' | tee
+        echo "njs v$(docker run -t macbre/nginx njs -v)"
 
     - name: Serve a static asset
       run: |
@@ -70,6 +71,17 @@ jobs:
         grep --fixed-strings '< x-rewrite: 1' /tmp/out
         grep --fixed-strings '< Location: http://localhost/foobar' /tmp/out
 
+    - name: Check njs module
+      run: |
+        set -x
+
+        curl -v --compressed -H 'Host: njs' localhost:8888/hello 2>&1 | tee /tmp/out
+        grep --fixed-strings '< x-njs: 1' /tmp/out
+        grep 'Hello world from njs' /tmp/out
+
+    - name: http2 vs h3
+      run: |
+        set -x
 
         curl -v --compressed https://localhost:8889 2>&1 | tee /tmp/h2
 
@@ -86,6 +98,10 @@ jobs:
         grep --fixed-strings '< alt-svc: h3-27=":8889"; ma=86400, h3-28=":8889"; ma=86400, h3-29=":8889"; ma=86400' /tmp/h3
         grep --fixed-strings '< quic-status: h3' /tmp/h3
         grep --fixed-strings '<p>It works!</p>' /tmp/h3
+
+    - name: Test njs command line
+      run: |
+        echo "console.log('Using njs v' + njs.version)" | docker run -i --rm macbre/nginx njs -q | grep "Using njs v0.7.7"
 
     - name: Show logs
       if: always()

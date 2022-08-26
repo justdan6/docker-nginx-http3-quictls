@@ -10,6 +10,9 @@ ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 # https://github.com/google/boringssl
 ARG BORINGSSL_COMMIT=8ce0e1c14e48109773f1e94e5f8b020aa1e24dc5
 
+# http://hg.nginx.org/njs
+ARG NJS_COMMIT=b33aae5e8dc6
+
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
 ARG HEADERS_MORE_VERSION=0.34
@@ -64,6 +67,7 @@ ARG CONFIG="\
 		--with-http_v3_module \
 		--add-module=/usr/src/ngx_brotli \
 		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
+		--add-module=/usr/src/njs/nginx \
 		--add-dynamic-module=/ngx_http_geoip2_module \
 	"
 
@@ -74,6 +78,7 @@ ARG NGINX_VERSION
 ARG NGINX_COMMIT
 ARG NGX_BROTLI_COMMIT
 ARG HEADERS_MORE_VERSION
+ARG NJS_COMMIT
 ARG CONFIG
 
 # https://github.com/leev/ngx_http_geoip2_module/releases
@@ -113,7 +118,9 @@ RUN \
 		automake \
 		git \
 		g++ \
-		cmake
+		cmake \
+	&& apk add --no-cache --virtual .njs-build-deps \
+		readline-dev
 
 WORKDIR /usr/src/
 
@@ -153,6 +160,16 @@ RUN \
   && tar -xf headers-more-nginx-module.tar.gz
 
 RUN \
+  echo "Cloning and configuring njs ..." \
+  && cd /usr/src \
+  && hg clone --rev ${NJS_COMMIT} http://hg.nginx.org/njs \
+  && cd /usr/src/njs \
+  && ./configure \
+  && make njs \
+  && mv /usr/src/njs/build/njs /usr/sbin/njs \
+  && echo "njs v$(njs -v)"
+
+RUN \
   echo "Building nginx ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./auto/configure $CONFIG \
@@ -179,7 +196,7 @@ RUN \
 	# be deleted completely, then move `envsubst` back.
 	&& apk add --no-cache --virtual .gettext gettext \
 	\
-	&& scanelf --needed --nobanner /usr/sbin/nginx /usr/lib/nginx/modules/*.so /usr/bin/envsubst \
+	&& scanelf --needed --nobanner /usr/sbin/nginx /usr/sbin/njs /usr/lib/nginx/modules/*.so /usr/bin/envsubst \
 			| awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
 			| sort -u \
 			| xargs -r apk info --installed \
@@ -200,6 +217,8 @@ COPY --from=base /usr/local/lib/perl5/site_perl /usr/local/lib/perl5/site_perl
 COPY --from=base /usr/bin/envsubst /usr/local/bin/envsubst
 COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
 
+COPY --from=base /usr/sbin/njs /usr/sbin/njs
+
 RUN \
 	addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -217,6 +236,9 @@ COPY ssl_common.conf /etc/nginx/conf.d/ssl_common.conf
 
 # show env
 RUN env | sort
+
+# njs version
+RUN njs -v
 
 # test the configuration
 RUN nginx -V; nginx -t

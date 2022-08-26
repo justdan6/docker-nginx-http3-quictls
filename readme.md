@@ -1,7 +1,7 @@
 ## What is this?
 [![Docker Image CI](https://github.com/macbre/docker-nginx-http3/actions/workflows/dockerimage.yml/badge.svg)](https://github.com/macbre/docker-nginx-http3/actions/workflows/dockerimage.yml)
 
-Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [QUIC + **HTTP/3 experimental support**](https://hg.nginx.org/nginx-quic/shortlog/quic), [Google's `brotli` compression](https://github.com/google/ngx_brotli) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
+Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [QUIC + **HTTP/3 experimental support**](https://hg.nginx.org/nginx-quic/shortlog/quic), [Google's `brotli` compression](https://github.com/google/ngx_brotli), [`njs` module](https://nginx.org/en/docs/njs/) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
 
 nginx binary is built from [`quic` experimental branch](https://hg.nginx.org/nginx-quic/shortlog/quic). It's **not production-ready** yet!
 
@@ -24,6 +24,7 @@ docker pull ghcr.io/macbre/nginx-http3:latest
 * [`headers-more-nginx-module`](https://github.com/openresty/headers-more-nginx-module#readme) - sets and clears HTTP request and response headers
 * [`ngx_brotli`](https://github.com/google/ngx_brotli#configuration-directives) - adds [brotli response compression](https://datatracker.ietf.org/doc/html/rfc7932)
 * [`ngx_http_geoip2_module`](https://github.com/leev/ngx_http_geoip2_module#download-maxmind-geolite2-database-optional) - creates variables with values from the maxmind geoip2 databases based on the client IP
+* [`njs` module](https://nginx.org/en/docs/njs/) - a subset of the JavaScript language that allows extending nginx functionality
 
 ```
 $ docker run -it macbre/nginx-http3 nginx -V
@@ -80,9 +81,13 @@ configure arguments:
 	--with-http_v3_module 
 	--add-module=/usr/src/ngx_brotli 
 	--add-module=/usr/src/headers-more-nginx-module-0.34 
+	--add-module=/usr/src/njs/nginx 
 	--add-dynamic-module=/ngx_http_geoip2_module 
 	--with-cc-opt=-I../boringssl/include 
 	--with-ld-opt='-L../boringssl/build/ssl -L../boringssl/build/crypto'
+
+$ docker run -it macbre/nginx-http3 njs -v
+0.7.7
 ```
 
 ## SSL Grade A+ handling
