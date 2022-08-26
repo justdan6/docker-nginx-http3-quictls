@@ -67,8 +67,8 @@ ARG CONFIG="\
 		--with-http_v3_module \
 		--add-module=/usr/src/ngx_brotli \
 		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
+		--add-module=/usr/src/njs/nginx \
 		--add-dynamic-module=/ngx_http_geoip2_module \
-		--add-dynamic-module=/usr/src/njs/nginx \
 	"
 
 FROM alpine:3.16 AS base
