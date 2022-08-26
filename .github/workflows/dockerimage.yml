@@ -75,7 +75,7 @@ jobs:
       run: |
         set -x
 
-        curl -v --compressed localhost:8888/hello 2>&1 | tee /tmp/out
+        curl -v --compressed -H 'Host: njs' localhost:8888/hello 2>&1 | tee /tmp/out
         grep --fixed-strings '< x-njs: 1' /tmp/out
         grep 'Hello world from njs' /tmp/out
 
