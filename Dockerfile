@@ -75,7 +75,6 @@ ARG CONFIG="\
 	"
 
 FROM alpine:3.16 AS base
-LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
 ARG NGINX_VERSION
 ARG NGINX_COMMIT
