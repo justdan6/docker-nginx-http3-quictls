@@ -131,6 +131,7 @@ RUN \
 	&& git checkout --recurse-submodules -q FETCH_HEAD \
 	&& git submodule update --init --depth 1
 
+# hadolint ignore=SC2086
 RUN \
   echo "Cloning boringssl ..." \
   && cd /usr/src \
@@ -149,7 +150,7 @@ RUN \
 RUN \
   echo "Downloading headers-more-nginx-module ..." \
   && cd /usr/src \
-  && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
+  && wget --progress=dot:giga https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
   && tar -xf headers-more-nginx-module.tar.gz
 
 RUN \
