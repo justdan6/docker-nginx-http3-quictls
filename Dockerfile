@@ -130,13 +130,12 @@ RUN \
 	&& git checkout --recurse-submodules -q FETCH_HEAD \
 	&& git submodule update --init --depth 1
 
-# hadolint ignore=SC2086
 RUN \
   echo "Cloning boringssl ..." \
   && cd /usr/src \
   && git clone https://github.com/google/boringssl \
   && cd boringssl \
-  && git checkout $BORINGSSL_COMMIT
+  && git checkout "$BORINGSSL_COMMIT"
 
 RUN \
   echo "Building boringssl ..." \
@@ -173,7 +172,7 @@ RUN \
       --with-cc-opt="-I../boringssl/include"   \
       --with-ld-opt="-L../boringssl/build/ssl  \
                      -L../boringssl/build/crypto" \
-	&& make -j$(getconf _NPROCESSORS_ONLN)
+	&& make -j"$(getconf _NPROCESSORS_ONLN)"
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
@@ -219,7 +218,7 @@ COPY --from=base /usr/sbin/njs /usr/sbin/njs
 RUN \
 	addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
-	&& apk add --no-cache --virtual .nginx-rundeps tzdata $(cat /tmp/runDeps.txt) \
+	&& apk add --no-cache --virtual .nginx-rundeps tzdata "$(cat /tmp/runDeps.txt)" \
 	&& rm /tmp/runDeps.txt \
 	&& ln -s /usr/lib/nginx/modules /etc/nginx/modules \
 	# forward request and error logs to docker log collector
