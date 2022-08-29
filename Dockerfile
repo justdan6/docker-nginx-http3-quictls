@@ -75,7 +75,6 @@ ARG CONFIG="\
 	"
 
 FROM alpine:3.16 AS base
-LABEL maintainer="NGINX Docker Maintainers <docker-maint@nginx.com>"
 
 ARG NGINX_VERSION
 ARG NGINX_COMMIT
@@ -98,7 +97,6 @@ RUN \
 		pcre-dev \
 		zlib-dev \
 		linux-headers \
-		curl \
 		gnupg \
 		libxslt-dev \
 		gd-dev \
@@ -132,6 +130,7 @@ RUN \
 	&& git checkout --recurse-submodules -q FETCH_HEAD \
 	&& git submodule update --init --depth 1
 
+# hadolint ignore=SC2086
 RUN \
   echo "Cloning boringssl ..." \
   && cd /usr/src \
@@ -150,7 +149,7 @@ RUN \
 RUN \
   echo "Downloading headers-more-nginx-module ..." \
   && cd /usr/src \
-  && wget https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
+  && wget -q https://github.com/openresty/headers-more-nginx-module/archive/refs/tags/v${HEADERS_MORE_VERSION}.tar.gz -O headers-more-nginx-module.tar.gz \
   && tar -xf headers-more-nginx-module.tar.gz
 
 RUN \
@@ -174,7 +173,7 @@ RUN \
       --with-cc-opt="-I../boringssl/include"   \
       --with-ld-opt="-L../boringssl/build/ssl  \
                      -L../boringssl/build/crypto" \
-	&& make -j$(getconf _NPROCESSORS_ONLN)
+	&& make -j"$(getconf _NPROCESSORS_ONLN)"
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
@@ -186,7 +185,7 @@ RUN \
 	\
 	# https://tools.ietf.org/html/rfc7919
 	# https://github.com/mozilla/ssl-config-generator/blob/master/docs/ffdhe2048.txt
-	&& curl -fSL https://ssl-config.mozilla.org/ffdhe2048.txt > /etc/ssl/dhparam.pem \
+	&& wget -q https://ssl-config.mozilla.org/ffdhe2048.txt -O /etc/ssl/dhparam.pem \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
 	# the rest away. To do this, we need to install `gettext`
@@ -217,6 +216,7 @@ COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
 
 COPY --from=base /usr/sbin/njs /usr/sbin/njs
 
+# hadolint ignore=SC2046
 RUN \
 	addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
