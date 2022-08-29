@@ -130,12 +130,13 @@ RUN \
 	&& git checkout --recurse-submodules -q FETCH_HEAD \
 	&& git submodule update --init --depth 1
 
+# hadolint ignore=SC2086
 RUN \
   echo "Cloning boringssl ..." \
   && cd /usr/src \
   && git clone https://github.com/google/boringssl \
   && cd boringssl \
-  && git checkout "$BORINGSSL_COMMIT"
+  && git checkout $BORINGSSL_COMMIT
 
 RUN \
   echo "Building boringssl ..." \
@@ -215,10 +216,11 @@ COPY --from=base /etc/ssl/dhparam.pem /etc/ssl/dhparam.pem
 
 COPY --from=base /usr/sbin/njs /usr/sbin/njs
 
+# hadolint ignore=SC2046
 RUN \
 	addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
-	&& apk add --no-cache --virtual .nginx-rundeps tzdata "$(cat /tmp/runDeps.txt)" \
+	&& apk add --no-cache --virtual .nginx-rundeps tzdata $(cat /tmp/runDeps.txt) \
 	&& rm /tmp/runDeps.txt \
 	&& ln -s /usr/lib/nginx/modules /etc/nginx/modules \
 	# forward request and error logs to docker log collector
