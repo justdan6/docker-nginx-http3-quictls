@@ -97,7 +97,6 @@ RUN \
 		pcre-dev \
 		zlib-dev \
 		linux-headers \
-		curl \
 		gnupg \
 		libxslt-dev \
 		gd-dev \
@@ -186,7 +185,7 @@ RUN \
 	\
 	# https://tools.ietf.org/html/rfc7919
 	# https://github.com/mozilla/ssl-config-generator/blob/master/docs/ffdhe2048.txt
-	&& curl -fSL https://ssl-config.mozilla.org/ffdhe2048.txt > /etc/ssl/dhparam.pem \
+	&& wget -nv https://ssl-config.mozilla.org/ffdhe2048.txt -O /etc/ssl/dhparam.pem \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
 	# the rest away. To do this, we need to install `gettext`
