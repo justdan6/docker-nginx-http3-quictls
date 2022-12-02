@@ -218,8 +218,8 @@ COPY --from=base /usr/sbin/njs /usr/sbin/njs
 
 # hadolint ignore=SC2046
 RUN \
-	addgroup -S nginx \
-	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
+	addgroup --gid 101 -S nginx \
+	&& adduser --uid 100 -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
 	&& apk add --no-cache --virtual .nginx-rundeps tzdata $(cat /tmp/runDeps.txt) \
 	&& rm /tmp/runDeps.txt \
 	&& ln -s /usr/lib/nginx/modules /etc/nginx/modules \
@@ -241,8 +241,9 @@ RUN njs -v
 # test the configuration
 RUN nginx -V; nginx -t
 
-EXPOSE 80 443
+EXPOSE 8080 8443
 
 STOPSIGNAL SIGTERM
 
+USER nginx
 CMD ["nginx", "-g", "daemon off;"]
