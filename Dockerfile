@@ -245,5 +245,10 @@ EXPOSE 8080 8443
 
 STOPSIGNAL SIGTERM
 
+# prepare to switching to non-root - update file permissions
+RUN chown --verbose \
+	/var/run/nginx.pid \
+	nginx:nginx
+
 USER nginx
 CMD ["nginx", "-g", "daemon off;"]
