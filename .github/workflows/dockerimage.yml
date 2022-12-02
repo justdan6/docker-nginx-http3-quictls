@@ -52,7 +52,7 @@ jobs:
 
     - name: Are we running as non-root?
       run: |
-        docker run --rm nginx whoami | grep nginx
+        docker run --rm -t macbre/nginx nginx whoami | grep nginx
 
     - name: Run nginx -V and njs -v
       run: |
