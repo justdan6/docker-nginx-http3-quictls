@@ -7,8 +7,8 @@ ARG NGINX_COMMIT=5b8854a2f79c
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 
-# https://github.com/google/boringssl
-ARG BORINGSSL_COMMIT=e1b8685770d0e82e5a4a3c5d24ad1602e05f2e83
+# https://github.com/quictls/openssl
+ARG QUICTLS_BRANCH=openssl-3.1.0+quic
 
 # http://hg.nginx.org/njs
 ARG NJS_COMMIT=a1faa64d4972
@@ -22,7 +22,7 @@ ARG GEOIP2_VERSION=3.4
 
 # https://nginx.org/en/docs/http/ngx_http_v3_module.html
 ARG CONFIG="\
-		--build=quic-$NGINX_COMMIT-boringssl-$BORINGSSL_COMMIT \
+		--build=quic-$NGINX_COMMIT-quictls-$QUICTLS_BRANCH \
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \
 		--modules-path=/usr/lib/nginx/modules \
@@ -132,19 +132,11 @@ RUN \
 
 # hadolint ignore=SC2086
 RUN \
-  echo "Cloning boringssl ..." \
+  echo "Cloning QuicTLS ..." \
   && cd /usr/src \
-  && git clone https://github.com/google/boringssl \
-  && cd boringssl \
-  && git checkout $BORINGSSL_COMMIT
-
-RUN \
-  echo "Building boringssl ..." \
-  && cd /usr/src/boringssl \
-  && mkdir build \
-  && cd build \
-  && cmake -GNinja .. \
-  && ninja
+  && git clone https://github.com/quictls/openssl.git \
+  && cd openssl \
+  && git checkout $QUICTLS_BRANCH
 
 RUN \
   echo "Downloading headers-more-nginx-module ..." \
@@ -170,9 +162,7 @@ RUN \
   echo "Building nginx ..." \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./auto/configure $CONFIG \
-      --with-cc-opt="-I../boringssl/include"   \
-      --with-ld-opt="-L../boringssl/build/ssl  \
-                     -L../boringssl/build/crypto" \
+	  --with-openssl="../openssl" \
 	&& make -j"$(getconf _NPROCESSORS_ONLN)"
 
 RUN \
