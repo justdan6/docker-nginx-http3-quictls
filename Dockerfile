@@ -11,7 +11,7 @@ ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 ARG BORINGSSL_COMMIT=e1b8685770d0e82e5a4a3c5d24ad1602e05f2e83
 
 # http://hg.nginx.org/njs
-ARG NJS_COMMIT=c2bc1525be25
+ARG NJS_COMMIT=a1faa64d4972
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632

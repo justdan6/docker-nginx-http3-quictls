@@ -85,7 +85,7 @@ configure arguments:
 	--with-ld-opt='-L../boringssl/build/ssl -L../boringssl/build/crypto'
 
 $ docker run -it macbre/nginx-http3 njs -v
-0.8.0
+0.7.12
 ```
 
 ## SSL Grade A+ handling
