@@ -1,9 +1,7 @@
 ## What is this?
 [![Docker Image CI](https://github.com/macbre/docker-nginx-http3/actions/workflows/dockerimage.yml/badge.svg)](https://github.com/macbre/docker-nginx-http3/actions/workflows/dockerimage.yml)
 
-Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [QUIC + **HTTP/3 experimental support**](https://hg.nginx.org/nginx-quic/shortlog/quic), [Google's `brotli` compression](https://github.com/google/ngx_brotli), [`njs` module](https://nginx.org/en/docs/njs/) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
-
-nginx binary is built from [`quic` experimental branch](https://hg.nginx.org/nginx-quic/shortlog/quic). It's **not production-ready** yet!
+Stable and up-to-date [nginx](https://nginx.org/en/CHANGES) with [QUIC + **HTTP/3 experimental support**](https://nginx.org/en/docs/http/ngx_http_v3_module.html), [Google's `brotli` compression](https://github.com/google/ngx_brotli), [`njs` module](https://nginx.org/en/docs/njs/) and [Grade A+ SSL config](https://ssl-config.mozilla.org/)
 
 ## How to use this image
 As this project is based on the official [nginx image](https://hub.docker.com/_/nginx/) look for instructions there. In addition to the standard configuration directives, you'll be able to use the brotli module specific ones, see [here for official documentation](https://github.com/google/ngx_brotli#configuration-directives)
@@ -28,12 +26,12 @@ docker pull ghcr.io/macbre/nginx-http3:latest
 
 ```
 $ docker run -it macbre/nginx-http3 nginx -V
-nginx version: nginx/1.23.4 (quic-0af598651e33-boringssl-8ce0e1c14e48109773f1e94e5f8b020aa1e24dc5)
-built by gcc 11.2.1 20220219 (Alpine 11.2.1_git20220219) 
+nginx version: nginx/1.25.1 (quic-5b8854a2f79c-boringssl-e1b8685770d0e82e5a4a3c5d24ad1602e05f2e83)
+built by gcc 12.2.1 20220924 (Alpine 12.2.1_git20220924-r4) 
 built with OpenSSL 1.1.1 (compatible; BoringSSL) (running with BoringSSL)
 TLS SNI support enabled
 configure arguments: 
-	--build=quic-0af598651e33-boringssl-8ce0e1c14e48109773f1e94e5f8b020aa1e24dc5 
+	--build=quic-5b8854a2f79c-boringssl-e1b8685770d0e82e5a4a3c5d24ad1602e05f2e83 
 	--prefix=/etc/nginx 
 	--sbin-path=/usr/sbin/nginx 
 	--modules-path=/usr/lib/nginx/modules 
@@ -87,7 +85,7 @@ configure arguments:
 	--with-ld-opt='-L../boringssl/build/ssl -L../boringssl/build/crypto'
 
 $ docker run -it macbre/nginx-http3 njs -v
-0.7.7
+0.7.12
 ```
 
 ## SSL Grade A+ handling
@@ -114,10 +112,11 @@ Please refer to `tests/https.conf` config file for an example config used by the
 ```
 server {
     # http/3
-    listen 443 http3 reuseport;
+    listen 443 quic reuseport;
 
     # http/2 and http/1.1
-    listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
 
     server_name localhost;  # customize to match your domain
 
@@ -125,14 +124,14 @@ server {
     ssl_certificate     /etc/nginx/ssl/localhost.crt;
     ssl_certificate_key /etc/nginx/ssl/localhost.key;
 
-    # Enable all TLS versions (TLSv1.3 is required for QUIC).
-    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    # TLSv1.3 is required for QUIC.
+    ssl_protocols TLSv1.2 TLSv1.3;
 
     # 0-RTT QUIC connection resumption
     ssl_early_data on;
 
     # Add Alt-Svc header to negotiate HTTP/3.
-    add_header alt-svc 'h3-27=":443"; ma=86400, h3-28=":443"; ma=86400, h3-29=":443"; ma=86400';
+    add_header alt-svc 'h3=":443"; ma=86400';
 
     # Sent when QUIC was used
     add_header QUIC-Status $http3;

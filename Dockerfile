@@ -1,17 +1,17 @@
-# https://hg.nginx.org/nginx-quic/fie/tip/src/core/nginx.h
-ARG NGINX_VERSION=1.23.4
+# https://hg.nginx.org/nginx/file/tip/src/core/nginx.h
+ARG NGINX_VERSION=1.25.1
 
-# https://hg.nginx.org/nginx-quic/shortlog/quic
-ARG NGINX_COMMIT=0af598651e33
+# https://hg.nginx.org/nginx
+ARG NGINX_COMMIT=5b8854a2f79c
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 
 # https://github.com/google/boringssl
-ARG BORINGSSL_COMMIT=b0341041b03ea71d8371a9692aedae263fc06ee9
+ARG BORINGSSL_COMMIT=e1b8685770d0e82e5a4a3c5d24ad1602e05f2e83
 
 # http://hg.nginx.org/njs
-ARG NJS_COMMIT=b33aae5e8dc6
+ARG NJS_COMMIT=a1faa64d4972
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
@@ -20,7 +20,7 @@ ARG HEADERS_MORE_VERSION=0.34
 # https://github.com/leev/ngx_http_geoip2_module/releases
 ARG GEOIP2_VERSION=3.4
 
-# https://hg.nginx.org/nginx-quic/file/quic/README#l72
+# https://nginx.org/en/docs/http/ngx_http_v3_module.html
 ARG CONFIG="\
 		--build=quic-$NGINX_COMMIT-boringssl-$BORINGSSL_COMMIT \
 		--prefix=/etc/nginx \
@@ -74,7 +74,7 @@ ARG CONFIG="\
 		--add-dynamic-module=/usr/src/ngx_http_geoip2_module \
 	"
 
-FROM alpine:3.16 AS base
+FROM alpine:3.17 AS base
 
 ARG NGINX_VERSION
 ARG NGINX_COMMIT
@@ -117,8 +117,8 @@ RUN \
 WORKDIR /usr/src/
 
 RUN \
-	echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'quic' branch) ..." \
-	&& hg clone -b quic --rev $NGINX_COMMIT https://hg.nginx.org/nginx-quic /usr/src/nginx-$NGINX_VERSION
+	echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'default' branch) ..." \
+	&& hg clone -b default --rev $NGINX_COMMIT https://hg.nginx.org/nginx /usr/src/nginx-$NGINX_VERSION
 
 RUN \
 	echo "Cloning brotli $NGX_BROTLI_COMMIT ..." \
@@ -199,7 +199,7 @@ RUN \
 			| xargs -r apk info --installed \
 			| sort -u > /tmp/runDeps.txt
 
-FROM alpine:3.16
+FROM alpine:3.17
 ARG NGINX_VERSION
 ARG NGINX_COMMIT
 
