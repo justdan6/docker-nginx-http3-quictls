@@ -3,7 +3,7 @@ name: ci-matrix
 on:
   push:
     branches:
-      - "main"
+      - "master"
     tags:
       - "v*.*.*"
 
