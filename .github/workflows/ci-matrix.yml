@@ -4,6 +4,8 @@ on:
   workflow_run:
     workflows: [Docker Image CI]
     branches: [master]
+    tags:
+      - "v*.*.*"
     types:
     - completed
 
