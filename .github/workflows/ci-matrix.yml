@@ -1,11 +1,12 @@
 name: ci-matrix
 
 on:
+  push:
+    tags:
+      - "v*.*.*"
   workflow_run:
     workflows: [Docker Image CI]
     branches: [master]
-    tags:
-      - "v*.*.*"
     types:
     - completed
 
