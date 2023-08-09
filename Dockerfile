@@ -11,7 +11,7 @@ ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 ARG QUICTLS_BRANCH=openssl-3.0.10+quic
 
 # http://hg.nginx.org/njs
-ARG NJS_COMMIT=a1faa64d4972
+ARG NJS_COMMIT=0ed1952588ab
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
