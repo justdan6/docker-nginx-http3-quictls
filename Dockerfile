@@ -8,7 +8,7 @@ ARG NGINX_COMMIT=1d839f05409d
 ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 
 # https://github.com/quictls/openssl
-ARG QUICTLS_BRANCH=openssl-3.0.10+quic
+ARG QUICTLS_BRANCH=openssl-3.1.4+quic
 
 # http://hg.nginx.org/njs
 ARG NJS_COMMIT=a1faa64d4972
