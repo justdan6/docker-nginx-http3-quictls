@@ -1,5 +1,5 @@
 # https://hg.nginx.org/nginx/file/tip/src/core/nginx.h
-ARG NGINX_VERSION=1.25.2
+ARG NGINX_VERSION=1.25.3
 
 # https://hg.nginx.org/nginx
 ARG NGINX_COMMIT=1d839f05409d
