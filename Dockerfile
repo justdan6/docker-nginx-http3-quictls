@@ -1,8 +1,8 @@
 # https://hg.nginx.org/nginx/file/tip/src/core/nginx.h
-ARG NGINX_VERSION=1.27.0
+ARG NGINX_VERSION=1.27.1
 
 # https://hg.nginx.org/nginx
-ARG NGINX_COMMIT=02e9411009b9
+ARG NGINX_COMMIT=8796dfbe7177
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
@@ -11,7 +11,7 @@ ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 ARG QUICTLS_BRANCH=openssl-3.1.5+quic
 
 # http://hg.nginx.org/njs
-ARG NJS_COMMIT=f98dd6884786
+ARG NJS_COMMIT=11d956c1577c
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
