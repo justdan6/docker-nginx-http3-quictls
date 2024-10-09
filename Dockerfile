@@ -1,17 +1,14 @@
-# https://hg.nginx.org/nginx/file/tip/src/core/nginx.h
-ARG NGINX_VERSION=1.27.1
-
-# https://hg.nginx.org/nginx
-ARG NGINX_COMMIT=8796dfbe7177
+# https://github.com/nginx/nginx/blob/master/src/core/nginx.h
+ARG NGINX_VERSION=1.27.2
 
 # https://github.com/google/ngx_brotli
 ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 
 # https://github.com/quictls/openssl
-ARG QUICTLS_BRANCH=openssl-3.1.5+quic
+ARG QUICTLS_BRANCH=openssl-3.3.0+quic
 
-# http://hg.nginx.org/njs
-ARG NJS_COMMIT=11d956c1577c
+# https://github.com/nginx/njs
+ARG NJS_COMMIT=39a2d4bf212346d1487e4d27383453cafefa17ea
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
@@ -92,7 +89,6 @@ RUN \
 		musl-dev \
 		go \
 		ninja \
-		mercurial \
 		openssl-dev \
 		pcre-dev \
 		zlib-dev \
@@ -118,7 +114,7 @@ WORKDIR /usr/src/
 
 RUN \
 	echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'default' branch) ..." \
-	&& hg clone -b default --rev $NGINX_COMMIT https://hg.nginx.org/nginx /usr/src/nginx-$NGINX_VERSION
+	&& git clone --depth 1 --branch release-$NGINX_VERSION https://github.com/nginx/nginx.git /usr/src/nginx-$NGINX_VERSION
 
 RUN \
 	echo "Cloning brotli $NGX_BROTLI_COMMIT ..." \
@@ -151,8 +147,9 @@ RUN \
 RUN \
   echo "Cloning and configuring njs ..." \
   && cd /usr/src \
-  && hg clone --rev ${NJS_COMMIT} http://hg.nginx.org/njs \
+  && git clone --depth 1 https://github.com/nginx/njs.git \
   && cd /usr/src/njs \
+  && git checkout ${NJS_COMMIT} \
   && ./configure \
   && make njs \
   && mv /usr/src/njs/build/njs /usr/sbin/njs \
