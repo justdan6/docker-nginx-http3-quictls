@@ -8,7 +8,7 @@ ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
 ARG QUICTLS_BRANCH=openssl-3.3.0+quic
 
 # https://github.com/nginx/njs
-ARG NJS_COMMIT=39a2d4bf212346d1487e4d27383453cafefa17ea
+ARG NJS_VERSION=0.8.6
 
 # https://github.com/openresty/headers-more-nginx-module#installation
 # we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
@@ -77,7 +77,7 @@ ARG NGINX_VERSION
 ARG NGINX_COMMIT
 ARG NGX_BROTLI_COMMIT
 ARG HEADERS_MORE_VERSION
-ARG NJS_COMMIT
+ARG NJS_VERSION
 ARG GEOIP2_VERSION
 ARG CONFIG
 
@@ -146,10 +146,8 @@ RUN \
 
 RUN \
   echo "Cloning and configuring njs ..." \
-  && cd /usr/src \
-  && git clone --depth 1 https://github.com/nginx/njs.git \
+  && git clone --depth 1 --branch ${NJS_VERSION} https://github.com/nginx/njs.git /usr/src/njs \ 
   && cd /usr/src/njs \
-  && git checkout ${NJS_COMMIT} \
   && ./configure \
   && make njs \
   && mv /usr/src/njs/build/njs /usr/sbin/njs \
