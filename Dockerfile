@@ -173,8 +173,11 @@ RUN \
 COPY patches/njs-1.0.2-big-endian.patch /usr/src/njs-big-endian.patch
 RUN \
 	git -C /usr/src/njs apply /usr/src/njs-big-endian.patch \
-	&& make -C /usr/src/njs njs \
-	&& mv /usr/src/njs/build/njs /usr/sbin/njs \
+	&& cd /usr/src/njs \
+	&& ./configure --build-dir=build-cli \
+	&& make -f build-cli/Makefile -j"$(getconf _NPROCESSORS_ONLN)" njs \
+	&& mv build-cli/njs /usr/sbin/njs \
+	&& make -f build/Makefile -j"$(getconf _NPROCESSORS_ONLN)" libnjs \
 	&& make -C /usr/src/nginx-$NGINX_VERSION -j"$(getconf _NPROCESSORS_ONLN)"
 
 RUN \
