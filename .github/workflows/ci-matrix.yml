@@ -23,14 +23,19 @@ jobs:
         include:
           - platform: linux/amd64
             artifact: linux-amd64
+            arch: amd64
           - platform: linux/arm/v7
             artifact: linux-arm-v7
+            arch: arm-v7
           - platform: linux/arm64
             artifact: linux-arm64
+            arch: arm64
           - platform: linux/ppc64le
             artifact: linux-ppc64le
+            arch: ppc64le
           - platform: linux/s390x
             artifact: linux-s390x
+            arch: s390x
     steps:
       - uses: actions/checkout@v7.0.1
       - name: Docker metadata
@@ -55,7 +60,9 @@ jobs:
           no-cache: ${{ github.event_name == 'workflow_dispatch' }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
-          cache-from: type=gha,scope=publish-${{ matrix.artifact }}
+          cache-from: |
+            type=gha,scope=publish-${{ matrix.artifact }}
+            type=gha,scope=test-${{ matrix.arch }}
           cache-to: type=gha,mode=max,scope=publish-${{ matrix.artifact }}
       - name: Export digest
         env:
