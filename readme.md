@@ -19,6 +19,12 @@ Verified against upstream on 2026-11-03:
 | [Brotli library](https://github.com/google/brotli/releases) | 1.2.1 |
 | [GeoIP2 module](https://github.com/leev/ngx_http_geoip2_module/releases) | 3.4 (already the latest release) |
 
+njs 1.0.2 includes a regression affecting imports, local variables and function
+parameters on 64-bit big-endian machines such as s390x. The build backports
+[upstream fix 4ee6f12](https://github.com/nginx/njs/commit/4ee6f12facd274f2c1202c1bf9edbb24aa64c2d0),
+and the smoke test checks lexical scope and an imported HTTP handler. Remove
+the backport when upgrading to a release that includes that fix.
+
 Alpine supplies the current packages available in its 3.24 repositories for
 PCRE2, zlib, Perl, libmaxminddb and other system dependencies. Rebuild with
 `--pull --no-cache` to refresh those packages. Brotli is explicitly built as a

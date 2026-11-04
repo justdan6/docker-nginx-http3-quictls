@@ -168,6 +168,15 @@ RUN \
 	--with-openssl-opt=no-tests \
 	&& make -j"$(getconf _NPROCESSORS_ONLN)"
 
+# Backport nginx/njs#1143, fixed upstream after 1.0.2. Rebuild both consumers
+# after applying it so changes to this patch can reuse the expensive TLS build.
+COPY patches/njs-1.0.2-big-endian.patch /usr/src/njs-big-endian.patch
+RUN \
+	git -C /usr/src/njs apply /usr/src/njs-big-endian.patch \
+	&& make -C /usr/src/njs njs \
+	&& mv /usr/src/njs/build/njs /usr/sbin/njs \
+	&& make -C /usr/src/nginx-$NGINX_VERSION -j"$(getconf _NPROCESSORS_ONLN)"
+
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
 	&& make install \

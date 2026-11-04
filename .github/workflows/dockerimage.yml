@@ -63,35 +63,6 @@ jobs:
           cache-to: type=gha,mode=max,scope=test-${{ matrix.arch }}
       - name: Test nginx, modules, HTTP/2 and HTTP/3
         run: ./tests/smoke.sh
-      - name: Save failed s390x image for diagnosis
-        if: failure() && matrix.arch == 's390x' && steps.build.outcome == 'success'
-        run: docker save justdanz/nginx-http3-quictls:local | gzip > /tmp/s390x-image.tar.gz
-      - name: Upload failed s390x image
-        if: failure() && matrix.arch == 's390x' && steps.build.outcome == 'success'
-        uses: actions/upload-artifact@v7.0.2
-        with:
-          name: s390x-image
-          path: /tmp/s390x-image.tar.gz
-          compression-level: 0
-          retention-days: 1
-      - name: Export s390x build stage for diagnosis
-        if: failure() && matrix.arch == 's390x' && steps.build.outcome == 'success'
-        uses: docker/build-push-action@v7.4.0
-        with:
-          context: .
-          target: base
-          platforms: linux/s390x
-          tags: nginx-http3-s390x-build:diagnostic
-          cache-from: type=gha,scope=test-s390x
-          outputs: type=docker,dest=/tmp/s390x-build.tar
-      - name: Upload s390x build stage
-        if: failure() && matrix.arch == 's390x' && steps.build.outcome == 'success'
-        uses: actions/upload-artifact@v7.0.2
-        with:
-          name: s390x-build-stage
-          path: /tmp/s390x-build.tar
-          compression-level: 1
-          retention-days: 1
 
   publish:
     needs: [lint, test]

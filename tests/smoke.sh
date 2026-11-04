@@ -35,6 +35,8 @@ grep -F -- '--with-http_v3_module' "$TLS_DIR/version"
 docker run --rm "$IMAGE" sh -c 'test "$(njs -v)" = "$NJS_VERSION"'
 printf "console.log('Using njs v' + njs.version)\n" \
   | docker run -i --rm "$IMAGE" njs -q - | grep -F 'Using njs v'
+docker run -i --rm "$IMAGE" njs -q - < tests/njs/scopes.js >"$TLS_DIR/scopes"
+grep -Fx 'Passed njs lexical scope' "$TLS_DIR/scopes"
 printf '${NGINX_VERSION}\n' \
   | docker run -i --rm "$IMAGE" sh -c 'test "$(envsubst)" = "$NGINX_VERSION"'
 
