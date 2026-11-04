@@ -87,9 +87,13 @@ Set these repository Actions secrets:
 
 Merge the update into `master`. The successful workflow publishes
 `justdanz/nginx-http3-quictls:latest` and a `sha-…` tag. You can also select
-**Actions → Docker Image CI → Run workflow** on `master` to rebuild with fresh
-base-image metadata. Source-build layers may be cached; use the local
-`--no-cache` command when you need every Alpine package refreshed immediately.
+**Actions → Docker Image CI → Run workflow** on `master` to pull the base image
+and rebuild without cache, refreshing Alpine packages too. From the GitHub CLI:
+
+```sh
+gh workflow run dockerimage.yml --ref master
+```
+
 Pull requests only build and test; they do not publish.
 
 For a versioned release after merging:

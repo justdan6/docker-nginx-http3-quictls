@@ -55,6 +55,8 @@ jobs:
           context: .
           platforms: ${{ matrix.platform }}
           load: true
+          pull: true
+          no-cache: ${{ github.event_name == 'workflow_dispatch' }}
           tags: justdanz/nginx-http3-quictls:local
           cache-from: type=gha,scope=test-${{ matrix.arch }}
           cache-to: type=gha,mode=max,scope=test-${{ matrix.arch }}

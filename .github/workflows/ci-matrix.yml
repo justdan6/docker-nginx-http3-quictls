@@ -51,6 +51,8 @@ jobs:
         with:
           context: .
           platforms: ${{ matrix.platform }}
+          pull: true
+          no-cache: ${{ github.event_name == 'workflow_dispatch' }}
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha,scope=publish-${{ matrix.artifact }}
