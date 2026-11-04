@@ -1,25 +1,30 @@
+ARG ALPINE_VERSION=3.24.3
+
 # https://github.com/nginx/nginx/blob/master/src/core/nginx.h
-ARG NGINX_VERSION=1.27.4
+ARG NGINX_VERSION=1.31.8
 
 # https://github.com/google/ngx_brotli
-ARG NGX_BROTLI_COMMIT=6e975bcb015f62e1f303054897783355e2a877dc
+ARG NGX_BROTLI_COMMIT=53e0fb55f250f48fe80c0ddbf6c0f7103cdbaae1
 
-# https://github.com/quictls/quictls
-ARG QUICTLS_TAG=openssl-3.3.0
+# Latest published QuicTLS release; the successor repository has no releases yet.
+# https://github.com/quictls/openssl/releases
+ARG QUICTLS_TAG=openssl-3.3.0-quic1
+
+# https://github.com/google/brotli/releases
+ARG BROTLI_VERSION=1.2.1
 
 # https://github.com/nginx/njs
-ARG NJS_VERSION=0.8.10
+ARG NJS_VERSION=1.0.2
 
 # https://github.com/openresty/headers-more-nginx-module#installation
-# we want to have https://github.com/openresty/headers-more-nginx-module/commit/e536bc595d8b490dbc9cf5999ec48fca3f488632
-ARG HEADERS_MORE_VERSION=0.34
+ARG HEADERS_MORE_VERSION=0.41
 
 # https://github.com/leev/ngx_http_geoip2_module/releases
 ARG GEOIP2_VERSION=3.4
 
 # https://nginx.org/en/docs/http/ngx_http_v3_module.html
 ARG CONFIG="\
-	--build=quic-$NGINX_COMMIT-quictls-$QUICTLS_TAG \
+	--build=nginx-$NGINX_VERSION-quictls-$QUICTLS_TAG \
 	--prefix=/etc/nginx \
 	--sbin-path=/usr/sbin/nginx \
 	--modules-path=/usr/lib/nginx/modules \
@@ -71,11 +76,13 @@ ARG CONFIG="\
 	--add-dynamic-module=/usr/src/ngx_http_geoip2_module \
 	"
 
-FROM alpine:3.21 AS base
+FROM alpine:${ALPINE_VERSION} AS base
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
 ARG NGINX_VERSION
-ARG NGINX_COMMIT
 ARG NGX_BROTLI_COMMIT
+ARG BROTLI_VERSION
+ARG QUICTLS_TAG
 ARG HEADERS_MORE_VERSION
 ARG NJS_VERSION
 ARG GEOIP2_VERSION
@@ -87,21 +94,16 @@ RUN \
 	libc-dev \
 	make \
 	musl-dev \
-	go \
-	ninja \
 	openssl-dev \
-	pcre-dev \
+	pcre2-dev \
 	zlib-dev \
 	linux-headers \
-	gnupg \
 	libxslt-dev \
 	gd-dev \
 	geoip-dev \
 	perl-dev \
 	&& apk add --no-cache --virtual .brotli-build-deps \
-	autoconf \
-	libtool \
-	automake \
+	ca-certificates \
 	git \
 	g++ \
 	cmake \
@@ -113,7 +115,7 @@ RUN \
 WORKDIR /usr/src/
 
 RUN \
-	echo "Cloning nginx $NGINX_VERSION (rev $NGINX_COMMIT from 'default' branch) ..." \
+	echo "Cloning nginx $NGINX_VERSION ..." \
 	&& git clone --depth 1 --branch release-$NGINX_VERSION https://github.com/nginx/nginx.git /usr/src/nginx-$NGINX_VERSION
 
 RUN \
@@ -124,15 +126,20 @@ RUN \
 	&& git remote add origin https://github.com/google/ngx_brotli.git \
 	&& git fetch --depth 1 origin $NGX_BROTLI_COMMIT \
 	&& git checkout --recurse-submodules -q FETCH_HEAD \
-	&& git submodule update --init --depth 1
+	&& git submodule update --init --depth 1 \
+	&& git -C deps/brotli fetch --depth 1 origin "refs/tags/v${BROTLI_VERSION}" \
+	&& git -C deps/brotli checkout --detach FETCH_HEAD \
+	&& cmake -S deps/brotli -B deps/brotli/out \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+		-DBUILD_SHARED_LIBS=OFF \
+		-DBROTLI_DISABLE_TESTS=ON \
+	&& cmake --build deps/brotli/out --parallel "$(getconf _NPROCESSORS_ONLN)" --target brotlienc brotlicommon
 
-# hadolint ignore=SC2086
 RUN \
 	echo "Cloning QuicTLS ..." \
 	&& cd /usr/src \
-	&& git clone https://github.com/quictls/quictls.git openssl \
-	&& cd openssl \
-	&& git checkout $QUICTLS_TAG
+	&& git clone --depth 1 --branch "$QUICTLS_TAG" https://github.com/quictls/openssl.git openssl
 
 RUN \
 	echo "Downloading headers-more-nginx-module ..." \
@@ -146,7 +153,7 @@ RUN \
 
 RUN \
 	echo "Cloning and configuring njs ..." \
-	&& git clone --depth 1 --branch ${NJS_VERSION} https://github.com/nginx/njs.git /usr/src/njs \ 
+	&& git clone --depth 1 --branch ${NJS_VERSION} https://github.com/nginx/njs.git /usr/src/njs \
 	&& cd /usr/src/njs \
 	&& ./configure \
 	&& make njs \
@@ -158,7 +165,20 @@ RUN \
 	&& cd /usr/src/nginx-$NGINX_VERSION \
 	&& ./auto/configure $CONFIG \
 	--with-openssl="../openssl" \
+	--with-openssl-opt=no-tests \
 	&& make -j"$(getconf _NPROCESSORS_ONLN)"
+
+# Backport nginx/njs#1143, fixed upstream after 1.0.2. Rebuild both consumers
+# after applying it so changes to this patch can reuse the expensive TLS build.
+COPY patches/njs-1.0.2-big-endian.patch /usr/src/njs-big-endian.patch
+RUN \
+	git -C /usr/src/njs apply /usr/src/njs-big-endian.patch \
+	&& cd /usr/src/njs \
+	&& ./configure --build-dir=build-cli \
+	&& make -f build-cli/Makefile -j"$(getconf _NPROCESSORS_ONLN)" njs \
+	&& mv build-cli/njs /usr/sbin/njs \
+	&& make -f build/Makefile -j"$(getconf _NPROCESSORS_ONLN)" libnjs \
+	&& make -C /usr/src/nginx-$NGINX_VERSION -j"$(getconf _NPROCESSORS_ONLN)"
 
 RUN \
 	cd /usr/src/nginx-$NGINX_VERSION \
@@ -172,10 +192,7 @@ RUN \
 	# https://github.com/mozilla/ssl-config-generator/blob/master/docs/ffdhe2048.txt
 	&& wget -q https://ssl-config.mozilla.org/ffdhe2048.txt -O /etc/ssl/dhparam.pem \
 	\
-	# Bring in gettext so we can get `envsubst`, then throw
-	# the rest away. To do this, we need to install `gettext`
-	# then move `envsubst` out of the way so `gettext` can
-	# be deleted completely, then move `envsubst` back.
+	# Copy only envsubst and its discovered dependencies into the final stage.
 	&& apk add --no-cache --virtual .gettext gettext \
 	\
 	&& scanelf --needed --nobanner /usr/sbin/nginx /usr/sbin/njs /usr/lib/nginx/modules/*.so /usr/bin/envsubst \
@@ -184,12 +201,16 @@ RUN \
 	| xargs -r apk info --installed \
 	| sort -u > /tmp/runDeps.txt
 
-FROM alpine:3.21
+FROM alpine:${ALPINE_VERSION}
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 ARG NGINX_VERSION
-ARG NGINX_COMMIT
 
-ENV NGINX_VERSION $NGINX_VERSION
-ENV NGINX_COMMIT $NGINX_COMMIT
+ARG NJS_VERSION
+ARG QUICTLS_TAG
+
+ENV NGINX_VERSION=$NGINX_VERSION \
+    NJS_VERSION=$NJS_VERSION \
+    QUICTLS_TAG=$QUICTLS_TAG
 
 COPY --from=base /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=base /etc/nginx /etc/nginx
@@ -205,11 +226,12 @@ COPY --from=base /usr/sbin/njs /usr/sbin/njs
 RUN \
 	addgroup --gid 101 -S nginx \
 	&& adduser --uid 100 -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
-	&& apk add --no-cache --virtual .nginx-rundeps tzdata $(cat /tmp/runDeps.txt) \
+	&& apk add --no-cache --virtual .nginx-rundeps ca-certificates tzdata $(cat /tmp/runDeps.txt) \
 	&& rm /tmp/runDeps.txt \
 	&& ln -s /usr/lib/nginx/modules /etc/nginx/modules \
 	# forward request and error logs to docker log collector
-	&& mkdir /var/log/nginx \
+	&& mkdir -p /var/log/nginx /var/cache/nginx /etc/nginx/main.d \
+	&& chown nginx:nginx /var/cache/nginx \
 	&& touch /var/log/nginx/access.log /var/log/nginx/error.log \
 	&& ln -sf /dev/stdout /var/log/nginx/access.log \
 	&& ln -sf /dev/stderr /var/log/nginx/error.log
@@ -217,16 +239,13 @@ RUN \
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY ssl_common.conf /etc/nginx/conf.d/ssl_common.conf
 
-# show env
-RUN env | sort
-
 # njs version
 RUN njs -v
 
 # test the configuration
-RUN nginx -V; nginx -t
+RUN nginx -V && nginx -t
 
-EXPOSE 8080 8443
+EXPOSE 80 443/tcp 443/udp
 
 STOPSIGNAL SIGTERM
 
@@ -234,5 +253,6 @@ STOPSIGNAL SIGTERM
 RUN chown --verbose nginx:nginx \
 	/var/run/nginx.pid
 
-USER nginx
+USER 100:101
+RUN nginx -t
 CMD ["nginx", "-g", "daemon off;"]
