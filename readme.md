@@ -72,6 +72,11 @@ The script binds the demo to localhost: HTTP on 8888 and HTTPS/QUIC on 8889
 for seven days; rerun `./tests/generate-cert.sh tests/.tls` to renew them.
 These certificates and test configurations are only for local testing.
 
+On macOS, Docker Desktop must be allowed to read the checkout's directory.
+If bind mounts from `Documents` fail with `operation not permitted`, use a
+checkout in a Docker-shared directory outside the protected folder, or grant
+Docker Desktop access to that folder. See [Docker's file sharing settings](https://docs.docker.com/desktop/settings-and-maintenance/settings/#file-sharing).
+
 ## Publish an updated Docker Hub image
 
 The GitHub Actions workflow first lints and builds/tests nginx on native amd64
